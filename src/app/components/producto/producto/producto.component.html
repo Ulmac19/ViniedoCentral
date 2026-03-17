@@ -1,0 +1,14 @@
+<article class="card">
+  <div class="image-container">
+    <img [src]="product.imageUrl" [alt]="product.name" />
+  </div>
+  
+  <div class="body">
+    <h3 class="title">{{ product.name }}</h3>
+    <span class="price">{{ product.price | currency:'MXN' }}</span>
+    
+    <button class="btn-add" [disabled]="!product.inStock" (click)="onAdd()">
+      <i class="fa fa-shopping-cart"></i> Añadir al carrito
+    </button>
+  </div>
+</article>

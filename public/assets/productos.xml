@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+  <product>
+    <id>1</id>
+    <name>TEQUILA MAESTRO DOBEL .700</name>
+    <price>739.00</price>
+    <imageUrl>assets/dobel.jpg</imageUrl>
+    <category>Tequila Cristalino</category>
+    <description>Maestro Dobel es la representación más exacta de todo aquello que integra innovación y tecnología para crear algo especial. Producto con denominación de origen.</description>
+    <inStock>true</inStock>
+  </product>
+  
+  <product>
+    <id>2</id>
+    <name>TEQUILA DON JULIO 70 .700</name>
+    <price>1128.00</price>
+    <imageUrl>assets/donjulio.webp</imageUrl>
+    <category>Tequila Añejo Cristalino</category>
+    <description>Tequila añejo cristalino que combina la suavidad de un tequila blanco con la complejidad de un añejo. Notas de vainilla y miel.</description>
+    <inStock>true</inStock>
+  </product>
+  
+  <product>
+    <id>3</id>
+    <name>TEQUILA CLASE AZUL .750</name>
+    <price>3657.00</price>
+    <imageUrl>assets/claseazul.webp</imageUrl>
+    <category>Tequila Reposado</category>
+    <description>Tequila reposado ultra premium en una licorera de cerámica pintada a mano. Elaborado con agave azul Tequilana Weber.</description>
+    <inStock>true</inStock>
+  </product>
+
+  <product>
+    <id>4</id>
+    <name>TEQUILA SIETE LEGUAS .750</name>
+    <price>3657.00</price>
+    <imageUrl>assets/7leguas.jpg</imageUrl>
+    <category>Tequila Blanco</category>
+    <description>Tequila blanco artesanal con un intenso sabor a agave cocido y ligeras notas cítricas y dulces.</description>
+    <inStock>true</inStock>
+  </product>
+</products>

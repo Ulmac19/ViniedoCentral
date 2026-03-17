@@ -1,0 +1,74 @@
+<header class="navbar-compact">
+  <div class="brand">
+    <img src="assets/logo-vitis.png" alt="Logo" class="logo-small">
+    <div class="welcome-text">
+      <h2>BIENVENIDO</h2>
+      <p>Juan</p>
+    </div>
+  </div>
+
+  <div class="cart-icon-container" routerLink="/carrito">
+    <i class="fas fa-shopping-cart"></i>
+  </div>
+</header>
+
+<div class="container">
+  <h1 class="main-title">CARRITO DE COMPRAS</h1>
+  <hr class="divider">
+
+  <div class="cart-layout">
+    <div class="items-list">
+      @if (productos().length === 0) {
+      <p class="empty-msg">Tu carrito está vacío.</p>
+      } @else {
+      @for (item of productos(); track item.id) {
+      <div class="product-row">
+        <img [src]="item.imageUrl" [alt]="item.name" class="thumb">
+
+        <div class="details">
+          <h3 class="product-name">{{ item.name }}</h3>
+          <p class="price-label">{{ item.price | currency:'MXN' }}</p>
+        </div>
+
+        <div class="controls">
+          <div class="qty-wrapper">
+            <label>Cantidad</label>
+            <input type="number" [value]="item.cantidad" min="1" (change)="cambiarCantidad(item.id, $event)"
+              (input)="cambiarCantidad(item.id, $event)">
+          </div>
+          <span class="subtotal-item">{{ item.price | currency:'MXN' }}</span>
+        </div>
+
+        <button class="btn-delete" (click)="quitar(item.id)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+      }
+      }
+    </div>
+
+    <aside class="summary-card">
+      <div class="summary-row">
+        <span>{{ productos().length }} artículo(s)</span>
+        <span>{{ subtotal() | currency:'MXN' }}</span>
+      </div>
+      <div class="summary-row">
+        <span>Envío</span>
+        <span>{{ costoEnvio() | currency:'MXN' }}</span>
+      </div>
+      <hr>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span>{{ total() | currency:'MXN' }}</span>
+      </div>
+      <button class="btn-checkout" (click)="realizarPago()">REALIZAR PAGO</button>
+      <button class="btn-xml" (click)="exportarXML()">EXPORTAR RECIBO XML</button>
+    </aside>
+  </div>
+
+  <footer class="cart-footer">
+    <button class="back-link" routerLink="/">
+      <i class="fas fa-chevron-left"></i> SEGUIR COMPRANDO
+    </button>
+  </footer>
+</div>

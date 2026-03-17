@@ -1,0 +1,57 @@
+.card {
+  background-color: #7DE1E1; /* Cyan de tu Figma */
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.image-container {
+  background: transparent;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.image-container img {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.title {
+  font-size: 16px;
+  margin: 10px 0;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.price {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.btn-add {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-add:hover {
+  background: white;
+  color: #7DE1E1;
+}

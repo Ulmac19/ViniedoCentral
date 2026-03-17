@@ -1,0 +1,14 @@
+li{
+    background: #F4F4F4;
+    margin: 5px 0;
+    padding: 10px;
+    list-style: none;
+    border-left: 5px solid #007BFF;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 16px;
+  font-family: system-ui, Arial, sans-serif;
+}

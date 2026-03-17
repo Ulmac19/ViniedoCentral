@@ -1,0 +1,32 @@
+<header class="navbar">
+  <div class="brand">
+    <img src="assets/logo-vitis.png" alt="Vitis & Byte Logo" class="logo">
+    <div class="welcome">
+      <h2>BIENVENIDO</h2>
+      <p>Juan</p>
+    </div>
+  </div>
+  
+  <div class="search-bar">
+    <input type="text" placeholder="Buscar botella o categoría..." (input)="onSearch($event)">
+  </div>
+
+  <div class="cart-icon-container" routerLink="/carrito">
+    <i class="fas fa-shopping-cart"></i>
+    @if (carritoService.productos().length > 0) {
+      <span class="cart-badge">
+        {{ carritoService.productos().length }}
+      </span>
+    }
+  </div>
+</header>
+
+<section class="grid">
+  @for (p of filteredProducts(); track p.id) {
+    <app-product-card [product]="p" (add)="agregar($event)"></app-product-card>
+  } @empty {
+    <div class="no-results">
+      <p>No se encontraron productos para "{{ searchTerm() }}"</p>
+    </div>
+  }
+</section>

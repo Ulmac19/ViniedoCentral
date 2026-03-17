@@ -1,0 +1,97 @@
+
+.navbar {
+  background-color: #4A1531; /* Color vino de tu Figma */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo {
+  height: 60px;
+  border-radius: 50%;
+  background: white; /* Para que resalte como en tu diseño */
+}
+
+.welcome h2 { margin: 0; font-size: 20px; letter-spacing: 1px; }
+.welcome p { margin: 0; color: #a894a0; font-size: 14px; }
+
+.search-bar input {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  width: 400px;
+  font-size: 14px;
+}
+
+.cart-icon {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  /* Esto hará que se creen tantas columnas como quepan en la pantalla */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  gap: 30px;
+  padding: 40px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #F5F5F5;
+}
+
+.cart-icon-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  /* Aumentamos el tamaño del ícono aquí */
+  font-size: 28px; 
+  transition: transform 0.2s ease;
+  color: white;
+}
+
+.cart-icon-container:hover {
+  transform: scale(1.1); /* Efecto de crecimiento al pasar el mouse */
+  color: #00CED1; /* Cyan de acento */
+}
+
+.cart-badge {
+  position: absolute;
+  /* Ajustamos la posición para que no estorbe al ícono más grande */
+  top: -10px; 
+  right: -12px;
+  background-color: #00CED1;
+  color: white;
+  font-size: 12px; /* Un poquito más grande el número también */
+  font-weight: bold;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  border: 2px solid #4A1531; /* Borde del color de la navbar para que resalte */
+}
+
+/* Animación para que "brinque" al agregar un producto */
+@keyframes pop-in {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #666;
+  font-style: italic;
+}

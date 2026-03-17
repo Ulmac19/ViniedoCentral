@@ -1,0 +1,130 @@
+
+/* --- NAVBAR COMPACTA --- */
+.navbar-compact {
+  background-color: #4A1531; /* Color vino principal */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 70px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-small {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  background: white;
+  object-fit: contain;
+}
+
+.welcome-text h2 { margin: 0; font-size: 16px; letter-spacing: 1px; }
+.welcome-text p { margin: 0; font-size: 13px; color: #d1c4cb; }
+.cart-icon-container { font-size: 20px; cursor: pointer; }
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.container {
+  padding: 40px;
+  width: 100%; /* Ocupa todo el ancho */
+  max-width: none; /* Eliminamos el límite de 1200px */
+  margin: 0; /* Quitamos el centrado */
+  box-sizing: border-box; /* Asegura que el padding no desborde la pantalla */
+}
+
+.main-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+.divider { border: 0.5px solid #ccc; margin-bottom: 30px; }
+
+/* --- LAYOUT DEL CARRITO --- */
+.cart-layout {
+  display: flex;
+  gap: 50px;
+  width: 100%;
+}
+
+.items-list { flex: 3; }
+
+.product-row {
+  display: flex;
+  align-items: center;
+  padding: 25px 0;
+  border-bottom: 1px solid #eee;
+  gap: 20px;
+}
+
+.thumb { width: 90px; height: auto; object-fit: contain; }
+
+.details { flex: 2; }
+.product-name { font-size: 15px; text-transform: uppercase; margin: 0 0 5px; }
+.price-label { color: #666; font-weight: bold; margin: 0; }
+
+.controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.qty-wrapper { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.qty-wrapper input { width: 50px; padding: 4px; border: 1px solid #ccc; text-align: center; }
+.subtotal-item { font-weight: bold; font-size: 17px; color: #000; }
+
+.btn-delete { background: none; border: none; cursor: pointer; color: #444; font-size: 18px; }
+
+/* --- TARJETA DE RESUMEN --- */
+.summary-card {
+  flex: 1; /* El resumen se queda a la derecha */
+  min-width: 350px; /* Evitamos que se haga muy pequeño */
+}
+
+.summary-row { display: flex; justify-content: space-between; margin: 15px 0; font-size: 18px; }
+.total { font-weight: bold; font-size: 22px; margin-top: 20px; }
+
+.btn-checkout {
+  width: 100%;
+  background-color: #00CED1; /* Cyan de acento */
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.btn-xml {
+  width: 100%;
+  background-color: #4A1531;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+/* --- FOOTER --- */
+.cart-footer {
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.back-link {
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+}
