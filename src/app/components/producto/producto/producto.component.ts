@@ -10,11 +10,14 @@ import { Product } from '../../../models/producto.model';
   styleUrl: './producto.component.css',
 })
 export class ProductCardComponent {
-  @Input({ required: true }) product!: Product;
-  @Output() add = new EventEmitter<Product>();
+  @Input() product!: Product;
+  
+  // Ahora el EventEmitter manda un objeto con el producto y la cantidad
+  @Output() add = new EventEmitter<{producto: Product, cantidad: number}>();
 
-  onAdd() {
-    this.add.emit(this.product);
+  onAdd(cantidadStr: string) {
+    const cantidad = parseInt(cantidadStr) || 1;
+    this.add.emit({ producto: this.product, cantidad: cantidad });
   }
 }
 

@@ -10,8 +10,10 @@ export class CarritoService {
     this.productosSignal().reduce((acc, p) => acc + (p.price * p.cantidad), 0));
   costoEnvio = signal(199.00);
   total = computed(() => this.subtotal() + (this.productosSignal().length > 0 ? this.costoEnvio() : 0));
+  totalArticulos = computed(() => 
+  this.productosSignal().reduce((acc, p) => acc + p.cantidad, 0));
 
-  agregar(producto: Product) {
+  agregar(producto: Product, cantidadAgregada: number) {
     this.productosSignal.update(lista => {
       // Revisamos si el producto ya existe en el carrito 
       const existe = lista.find(p => p.id === producto.id);
@@ -19,12 +21,12 @@ export class CarritoService {
       if (existe) {
         // Si existe, solo aumentamos su cantidad
         return lista.map(p =>
-          p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
+          p.id === producto.id ? { ...p, cantidad: p.cantidad + cantidadAgregada } : p
         );
       }
 
       // Si es nuevo, lo agregamos con cantidad inicial de 1
-      return [...lista, { ...producto, cantidad: 1 }];
+      return [...lista, { ...producto, cantidad: cantidadAgregada }];
     });
   }
 

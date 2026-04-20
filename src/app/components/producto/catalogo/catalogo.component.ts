@@ -4,12 +4,12 @@ import { RouterLink } from '@angular/router';
 import { ProductsService } from '../../../services/producto.service';
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductCardComponent } from '../producto/producto.component';
-import { CarritoComponent } from '../../carrito/carrito.component';
+
 
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [ProductCardComponent, RouterLink, CarritoComponent],
+  imports: [ProductCardComponent, RouterLink],
   templateUrl: './catalogo.component.html',
   styleUrls: ['./catalogo.component.css'],
 })
@@ -46,9 +46,9 @@ export class CatalogoComponent {
     this.searchTerm.set(inputElement.value);
   }
 
-  agregar(producto: Product) {
-    this.carritoService.agregar(producto);
-  }
+  agregar(eventData: {producto: Product, cantidad: number}) {
+  this.carritoService.agregar(eventData.producto, eventData.cantidad);
+}
 }
 
 

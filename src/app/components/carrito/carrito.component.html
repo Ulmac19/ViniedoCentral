@@ -49,9 +49,9 @@
 
     <aside class="summary-card">
       <div class="summary-row">
-        <span>{{ productos().length }} artículo(s)</span>
-        <span>{{ subtotal() | currency:'MXN' }}</span>
-      </div>
+    <span>{{ totalArticulos() }} artículo(s)</span> 
+    <span>{{ subtotal() | currency:'MXN' }}</span>
+  </div>
       <div class="summary-row">
         <span>Envío</span>
         <span>{{ costoEnvio() | currency:'MXN' }}</span>

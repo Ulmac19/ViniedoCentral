@@ -19,6 +19,7 @@ export class CarritoComponent {
   subtotal = this.carritoService.subtotal;
   costoEnvio = this.carritoService.costoEnvio;
   total = this.carritoService.total; // [cite: 93]
+  totalArticulos = this.carritoService.totalArticulos;
 
   quitar(id: number) { 
     this.carritoService.quitar(id); // [cite: 98]
@@ -29,7 +30,7 @@ export class CarritoComponent {
   }
 
   realizarPago() {
-    alert('Procesando pago (RF4.2)...');
+    alert('Procesando pago...');
   }
 
   cambiarCantidad(id: number, event: Event) {

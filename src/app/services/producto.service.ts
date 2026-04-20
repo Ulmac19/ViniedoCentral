@@ -1,73 +1,37 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Product } from '../models/producto.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
-
-  public allProducts = signal<Product[]>([]);
-
-  constructor(private http: HttpClient) {
-    this.cargarProductos();
-  }
+  private http = inject(HttpClient);
+  
+  // Tu ruta hacia el backend
+  private apiUrl = 'http://localhost:3000/api/productos';
 
   getAll(): Observable<Product[]> {
-    // Pedimos el XML como texto plano
-    return this.http.get('/assets/productos.xml', { responseType: 'text' }).pipe(
-      map((xmlText) => this.parseProductsXml(xmlText))
+    // Usamos <any[]> porque los datos de la BD vienen con otros nombres
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map(productosDB => 
+        productosDB.map(p => {
+          // APLICACIÓN DEL ANEXO FISCAL
+          // Precio Neto * IEPS (53%) * IVA (16%) = Precio Final Público
+          // 1.53 * 1.16 = 1.7748
+          const precioFinal = p.precio_neto * 1.7748;
+
+          return {
+            id: p.id_producto,        // Traducimos id_producto -> id
+            name: p.nombre,           // Traducimos nombre -> name
+            price: precioFinal,       // Mandamos el precio ya con impuestos
+            imageUrl: p.imagen_url,   // Traducimos imagen_url -> imageUrl
+            category: p.categoria,    // Traducimos categoria -> category
+            description: p.descripcion,
+            inStock: p.stock > 0,     // Si el stock es mayor a 0, hay inventario
+            cantidad: 1               // Requisito para el carrito
+          };
+        })
+      )
     );
-  }
-
-  private cargarProductos() {
-    this.http.get('/assets/productos.xml', { responseType: 'text' }).pipe(
-      map((xmlText) => this.parseProductsXml(xmlText))
-    ).subscribe({
-      next: (prods) => this.allProducts.set(prods), // Guardamos en la señal
-      error: (err) => console.error('Error cargando XML', err)
-    });
-  }
-
-  private parseProductsXml(xmlText: string): Product[] {
-    //Si DOMParser no existe (estamos en el servidor de Node.js), regresa vacío.
-    if (typeof DOMParser === 'undefined') {
-      return [];
-    }
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xmlText, 'application/xml');
-
-    // Si el XML está mal formado, normalmente aparece <parsererror>
-    if (doc.getElementsByTagName('parsererror').length > 0) {
-      return [];
-    }
-
-    const nodes = Array.from(doc.getElementsByTagName('product'));
-
-    return nodes.map((node) => ({
-    id: this.getNumber(node, 'id'),
-    name: this.getText(node, 'name'),
-    price: this.getNumber(node, 'price'),
-    imageUrl: this.getText(node, 'imageUrl'),
-    category: this.getText(node, 'category'),
-    description: this.getText(node, 'description'),
-    inStock: this.getBoolean(node, 'inStock'),
-    cantidad: 1,
-    }));
-  }
-
-  private getText(parent: Element, tag: string): string {
-    return parent.getElementsByTagName(tag)[0]?.textContent?.trim() ?? '';
-  }
-
-  private getNumber(parent: Element, tag: string): number {
-    const value = this.getText(parent, tag);
-    const n = Number(value);
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  private getBoolean(parent: Element, tag: string): boolean {
-    const value = this.getText(parent, tag).toLowerCase();
-    return value === 'true' || value === '1' || value === 'yes';
   }
 }

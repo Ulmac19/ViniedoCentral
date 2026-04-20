@@ -12,12 +12,12 @@
   </div>
 
   <div class="cart-icon-container" routerLink="/carrito">
-    <i class="fas fa-shopping-cart"></i>
-    @if (carritoService.productos().length > 0) {
-      <span class="cart-badge">
-        {{ carritoService.productos().length }}
-      </span>
-    }
+  <i class="fas fa-shopping-cart"></i>
+  @if (carritoService.totalArticulos() > 0) {
+    <span class="cart-badge">
+      {{ carritoService.totalArticulos() }}
+    </span>
+  }
   </div>
 </header>
 

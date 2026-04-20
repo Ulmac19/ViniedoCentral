@@ -7,8 +7,13 @@
     <h3 class="title">{{ product.name }}</h3>
     <span class="price">{{ product.price | currency:'MXN' }}</span>
     
-    <button class="btn-add" [disabled]="!product.inStock" (click)="onAdd()">
-      <i class="fa fa-shopping-cart"></i> Añadir al carrito
-    </button>
+    <div class="card-add-controls">
+  <input type="number" class="qty-input" min="1" value="1" #cantidadInput>
+  <button class="add-btn" (click)="onAdd(cantidadInput.value)">
+    <i class="fas fa-cart-plus"></i> Añadir
+  </button>
+</div>
+
+    
   </div>
 </article>
