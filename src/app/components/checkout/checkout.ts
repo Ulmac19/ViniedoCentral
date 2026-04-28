@@ -141,6 +141,7 @@ export class CheckoutComponent implements AfterViewInit {
           onApprove: async (data: { orderID: string }) => {
             try {
               await firstValueFrom(this.paypalApi.capturarOrden(data.orderID));
+              this.carrito.exportarXML();
               this.carrito.vaciarCarrito();
               void this.router.navigate(['/'], { queryParams: { pago: 'ok' } });
             } catch (e) {
