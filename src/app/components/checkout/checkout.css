@@ -1,0 +1,178 @@
+.navbar-compact {
+  background-color: #4a1531;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 70px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-small {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  background: white;
+  object-fit: contain;
+}
+
+.welcome-text h2 {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.welcome-text p {
+  margin: 0;
+  font-size: 13px;
+  color: #d1c4cb;
+}
+
+.cart-icon-container {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.container {
+  padding: 40px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.main-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  margin: 0 0 10px;
+  color: #555;
+  font-size: 15px;
+}
+
+.divider {
+  border: 0.5px solid #ccc;
+  margin-bottom: 30px;
+}
+
+.checkout-layout {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.resumen {
+  flex: 2;
+  min-width: 280px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin: 0 0 16px;
+  color: #333;
+}
+
+.line-items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+}
+
+.line-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+}
+
+.line-name {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.line-qty {
+  color: #666;
+}
+
+.line-price {
+  font-weight: bold;
+  text-align: right;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+  font-size: 17px;
+}
+
+.summary-row.total {
+  font-weight: bold;
+  font-size: 22px;
+  margin-top: 16px;
+}
+
+.empty-msg {
+  color: #666;
+}
+
+.empty-msg a {
+  color: #4a1531;
+  font-weight: 600;
+}
+
+.pago-card {
+  flex: 1;
+  min-width: 320px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 24px;
+  background: #fafafa;
+}
+
+.paypal-host {
+  min-height: 48px;
+  margin-bottom: 16px;
+}
+
+.loading-text {
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.error-text {
+  color: #b00020;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.btn-back {
+  width: 100%;
+  background: none;
+  border: 2px solid #4a1531;
+  color: #4a1531;
+  padding: 12px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.btn-back:hover {
+  background: #f5eef2;
+}

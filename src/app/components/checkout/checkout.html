@@ -1,0 +1,61 @@
+<header class="navbar-compact">
+  <div class="brand">
+    <img src="assets/logo-vitis.png" alt="Logo" class="logo-small">
+    <div class="welcome-text">
+      <h2>CHECKOUT</h2>
+      <p>Pago seguro</p>
+    </div>
+  </div>
+
+  <div class="cart-icon-container" routerLink="/carrito">
+    <i class="fas fa-shopping-cart"></i>
+  </div>
+</header>
+
+<div class="container">
+  <h1 class="main-title">CONFIRMAR PEDIDO</h1>
+  <p class="subtitle">Revisa tu resumen y paga con PayPal (sandbox).</p>
+  <hr class="divider">
+
+  <div class="checkout-layout">
+    <section class="resumen">
+      <h2 class="section-title">Resumen</h2>
+      @if (productos().length === 0) {
+        <p class="empty-msg">No hay artículos. <a routerLink="/carrito">Volver al carrito</a></p>
+      } @else {
+        <ul class="line-items">
+          @for (item of productos(); track item.id) {
+            <li class="line-row">
+              <span class="line-name">{{ item.name }}</span>
+              <span class="line-qty">× {{ item.cantidad }}</span>
+              <span class="line-price">{{ item.price * item.cantidad | currency:'MXN' }}</span>
+            </li>
+          }
+        </ul>
+        <div class="summary-row">
+          <span>Envío</span>
+          <span>{{ costoEnvio() | currency:'MXN' }}</span>
+        </div>
+        <hr>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>{{ total() | currency:'MXN' }}</span>
+        </div>
+      }
+    </section>
+
+    <aside class="pago-card">
+      <h2 class="section-title">Pago con PayPal</h2>
+      @if (cargandoSdk()) {
+        <p class="loading-text">Cargando botón de pago…</p>
+      }
+      @if (errorMsg(); as err) {
+        <p class="error-text" role="alert">{{ err }}</p>
+      }
+      <div #paypalHost class="paypal-host"></div>
+      <button type="button" class="btn-back" routerLink="/carrito">
+        <i class="fas fa-chevron-left"></i> Volver al carrito
+      </button>
+    </aside>
+  </div>
+</div>

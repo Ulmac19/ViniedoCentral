@@ -43,6 +43,11 @@ export class CarritoService {
     this.productosSignal.update(lista => lista.filter(p => p.id !== id));
   }
 
+  /** Se llama tras un pago exitoso para limpiar el estado del carrito (vista). */
+  vaciarCarrito() {
+    this.productosSignal.set([]);
+  }
+
   /** Recupera neto, IEPS e IVA a partir del precio unitario ya con impuestos (misma fórmula que el catálogo). */
   private desgloseImpuestosDesdePrecioFinal(precioConImpuestos: number): {
     neto: number;

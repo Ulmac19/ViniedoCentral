@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { CarritoService } from '../../services/carrito.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-carrito',
@@ -11,8 +11,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './carrito.component.css'
 })
 export class CarritoComponent {
-  // Inyectamos el servicio directamente
   private carritoService = inject(CarritoService);
+  private router = inject(Router);
 
   // Ahora estas propiedades pueden acceder al servicio sin error
   productos = this.carritoService.productos; // [cite: 95]
@@ -30,7 +30,10 @@ export class CarritoComponent {
   }
 
   realizarPago() {
-    alert('Procesando pago...');
+    if (this.productos().length === 0) {
+      return;
+    }
+    void this.router.navigate(['/checkout']);
   }
 
   cambiarCantidad(id: number, event: Event) {
