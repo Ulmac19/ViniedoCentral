@@ -1,0 +1,70 @@
+<div class="auth-container">
+  <!-- Panel Izquierdo: Branding (Color Vino) -->
+  <div class="auth-brand">
+    <div class="brand-content">
+      <img src="assets/logo-vitis.png" alt="Vitis & Byte Logo" class="auth-logo">
+      <h2>VITIS & BYTE</h2>
+      <p>Tu cava exclusiva en línea.</p>
+    </div>
+  </div>
+
+  <!-- Panel Derecho: Formularios (Blanco) -->
+  <div class="auth-form-container">
+    <div class="auth-box">
+      
+      <!-- ENCABEZADO DINÁMICO -->
+      <h2 class="auth-title">
+        @if (esLogin) { Bienvenido } @else { Crea tu cuenta }
+      </h2>
+      <p class="auth-subtitle">
+        @if (esLogin) { Ingresa tus credenciales para continuar } 
+        @else { Llena tus datos para unirte a Vitis & Byte }
+      </p>
+
+      <!-- Mensaje de Error (Aparece solo si hay un error del backend) -->
+      @if (mensajeError) {
+        <div class="error-msg">
+          <i class="fas fa-exclamation-circle"></i> {{ mensajeError }}
+        </div>
+      }
+
+      <!-- FORMULARIO: (ngSubmit) ejecuta la función onSubmit() -->
+      <form class="auth-form" (ngSubmit)="onSubmit()" #authForm="ngForm">
+        
+        <!-- Input de Nombre (SOLO VISIBLE EN REGISTRO) -->
+        @if (!esLogin) {
+          <div class="input-group">
+            <label>Nombre Completo</label>
+            <!-- [(ngModel)] enlaza el input con la variable del TS -->
+            <input type="text" name="nombre" [(ngModel)]="nombre" placeholder="Ej. Juan Pérez" required>
+          </div>
+        }
+
+        <div class="input-group">
+          <label>Correo Electrónico</label>
+          <input type="email" name="email" [(ngModel)]="email" placeholder="ejemplo@correo.com" required>
+        </div>
+
+        <div class="input-group">
+          <label>Contraseña</label>
+          <input type="password" name="password" [(ngModel)]="password" placeholder="********" required>
+        </div>
+
+        <!-- Botón principal (Se deshabilita si el formulario no es válido) -->
+        <button type="submit" class="btn-primary" [disabled]="!authForm.form.valid">
+          @if (esLogin) { ENTRAR } @else { REGISTRARSE }
+        </button>
+      </form>
+
+      <!-- ENLACE PARA CAMBIAR DE MODO -->
+      <p class="auth-switch">
+        @if (esLogin) {
+          ¿No tienes cuenta? <span (click)="cambiarModo()">Regístrate aquí</span>
+        } @else {
+          ¿Ya tienes cuenta? <span (click)="cambiarModo()">Inicia sesión aquí</span>
+        }
+      </p>
+
+    </div>
+  </div>
+</div>

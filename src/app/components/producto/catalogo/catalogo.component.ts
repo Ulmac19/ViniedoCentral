@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ProductsService } from '../../../services/producto.service';
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductCardComponent } from '../producto/producto.component';
-
+import { AuthService } from '../../../services/auth.service'; 
 
 @Component({
   selector: 'app-catalogo',
@@ -14,10 +14,23 @@ import { ProductCardComponent } from '../producto/producto.component';
   styleUrls: ['./catalogo.component.css'],
 })
 export class CatalogoComponent {
-  products = signal<Product[]>([]);
+  //Inyectamos el AuthService para acceder a la sesión
+  public authService = inject(AuthService);
 
+  //Creamos una señal computada que extrae solo el primer nombre
+  primerNombre = computed(() => {
+    const usuario = this.authService.usuarioActual();
+    if (usuario && usuario.nombre) {
+      // Divide el string por espacios y toma la posición 0 (el primer nombre)
+      return usuario.nombre.split(' ')[0]; 
+    }
+    return 'Invitado'; // Valor por defecto si no hay sesión
+  });
+
+  products = signal<Product[]>([]);
   searchTerm = signal<string>('');
-  // Lógica de filtrado en tiempo real (RF2.2)
+
+  //LOgica por filtrado
   filteredProducts = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
     if (!term) return this.products();
@@ -42,14 +55,10 @@ export class CatalogoComponent {
 
   onSearch(event: Event) {
     const inputElement = event.target as HTMLInputElement;
-    // Actualizamos la señal del término de búsqueda
     this.searchTerm.set(inputElement.value);
   }
 
   agregar(eventData: {producto: Product, cantidad: number}) {
-  this.carritoService.agregar(eventData.producto, eventData.cantidad);
+    this.carritoService.agregar(eventData.producto, eventData.cantidad);
+  }
 }
-}
-
-
-

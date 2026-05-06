@@ -1,0 +1,164 @@
+/* Contenedor principal a pantalla completa */
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F5F5F5; /* Fondo general de tu app[cite: 4] */
+  font-family: inherit;
+}
+
+/* --- PANEL IZQUIERDO (Branding) --- */
+.auth-brand {
+  flex: 1;
+  background-color: #4A1531; /* Color vino de tu navbar[cite: 4] */
+  color: white; /*[cite: 4] */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* Ocultar en celulares para dejar solo el formulario */
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.auth-logo {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%; /* Manteniendo la forma del logo[cite: 4] */
+  background: white; /*[cite: 4] */
+  padding: 15px;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+.auth-brand h2 {
+  margin: 0 0 10px 0;
+  font-size: 32px;
+  letter-spacing: 2px;
+}
+
+.auth-brand p {
+  margin: 0;
+  color: #a894a0; /* Gris rosado del texto "Bienvenido"[cite: 4] */
+  font-size: 18px;
+}
+
+/* --- PANEL DERECHO (Formularios) --- */
+.auth-form-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  padding: 40px;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-title {
+  color: #4A1531; /*[cite: 4] */
+  font-size: 32px;
+  margin: 0 0 5px 0;
+}
+
+.auth-subtitle {
+  color: #666; /* Color de tu texto "no-results"[cite: 4] */
+  font-size: 15px;
+  margin-bottom: 35px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333; /* Color de los labels de las tarjetas[cite: 5] */
+}
+
+/* Inputs basados en tu barra de búsqueda[cite: 4] */
+.input-group input {
+  padding: 15px 20px; /*[cite: 4] */
+  border-radius: 20px; /* Bordes redondeados[cite: 4] */
+  border: 2px solid #eee;
+  background-color: #F5F5F5; /*[cite: 4] */
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #7DE1E1; /* Resalte con tu color Cyan[cite: 5] */
+  background-color: white;
+}
+
+/* Botón principal basado en tu botón de añadir[cite: 5] */
+.btn-primary {
+  background-color: #4A1531; /* Color vino[cite: 5] */
+  color: white; /*[cite: 5] */
+  border: none; /*[cite: 5] */
+  padding: 15px;
+  border-radius: 25px; /* Bordes redondeados estilo pastilla[cite: 5] */
+  font-weight: bold; /*[cite: 5] */
+  font-size: 16px;
+  cursor: pointer; /*[cite: 5] */
+  transition: all 0.3s ease; /*[cite: 5] */
+  margin-top: 15px;
+  text-transform: uppercase;
+}
+
+.btn-primary:hover {
+  background-color: #2e0d1e; /* Vino más oscuro al hover[cite: 5] */
+  transform: translateY(-3px); /* Efecto de elevación de tus tarjetas[cite: 5] */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+  color: #666; /*[cite: 4] */
+}
+
+.auth-switch span {
+  color: #00CED1; /* Cyan de acento[cite: 4] */
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.auth-switch span:hover {
+  color: #4A1531; /* Vuelve al vino al pasar el mouse */
+}
+
+/* Estilo para el mensaje de error */
+.error-msg {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid #f87171;
+}
+
+/* Estilo para el botón cuando el formulario está incompleto */
+.btn-primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

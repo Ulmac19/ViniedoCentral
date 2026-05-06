@@ -143,7 +143,7 @@ export class CheckoutComponent implements AfterViewInit {
               await firstValueFrom(this.paypalApi.capturarOrden(data.orderID));
               this.carrito.exportarXML();
               this.carrito.vaciarCarrito();
-              void this.router.navigate(['/'], { queryParams: { pago: 'ok' } });
+              void this.router.navigate(['/catalogo'], { queryParams: { pago: 'ok' } });
             } catch (e) {
               this.errorMsg.set(this.mensajeDeErrorHttp(e));
               throw e;
