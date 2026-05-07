@@ -1,0 +1,92 @@
+<!-- Navbar reutilizada -->
+<header class="navbar-compact">
+  <div class="brand">
+    <img src="assets/logo-vitis.png" alt="Logo" class="logo-small">
+    <div class="welcome-text">
+      <h2>MIS PEDIDOS</h2>
+      <p>Historial de compras</p>
+    </div>
+  </div>
+  <div class="cart-icon-container" routerLink="/catalogo">
+    <i class="fas fa-store"></i> Volver a tienda
+  </div>
+</header>
+
+<div class="container">
+  <h1 class="main-title">Mi Historial</h1>
+  <hr class="divider">
+
+  @if (pedidos().length === 0) {
+    <div class="empty-msg">
+      <p>Aún no tienes pedidos registrados.</p>
+      <button class="btn-primary" routerLink="/catalogo">Ir a comprar</button>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="pedidos-table">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pedido of pedidos(); track pedido.id_orden) {
+            <tr>
+              <td class="fw-bold">{{ pedido.folio }}</td>
+              <td>{{ pedido.fecha_creacion | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ pedido.total | currency:'MXN' }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="pedido.estado === 'pagada'">
+                  {{ pedido.estado?.toUpperCase() }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-outline" (click)="verDetalle(pedido.id_orden)">
+                  Ver detalle
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- MODAL DE DETALLE -->
+@if (modalAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <!-- stopPropagation evita que al hacer clic dentro del modal, se cierre -->
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Detalle del Pedido</h2>
+        <button class="close-btn" (click)="cerrarModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <p><strong>Folio:</strong> {{ pedidoSeleccionado()?.orden.folio }}</p>
+        <p><strong>Fecha:</strong> {{ pedidoSeleccionado()?.orden.fecha_creacion | date:'medium' }}</p>
+        <hr>
+        
+        <ul class="line-items">
+          @for (item of pedidoSeleccionado()?.productos; track $index) {
+            <li class="line-row">
+              <span class="line-name">{{ item.cantidad }}x {{ item.nombre_producto }}</span>
+              <span class="line-price">{{ item.subtotal_linea | currency:'MXN' }}</span>
+            </li>
+          }
+        </ul>
+        
+        <hr>
+        <div class="summary-row total">
+          <span>Total Pagado:</span>
+          <span>{{ pedidoSeleccionado()?.orden.total | currency:'MXN' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+}

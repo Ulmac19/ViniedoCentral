@@ -1,0 +1,51 @@
+/* Reutilizando tu navbar y layout general */
+.navbar-compact { 
+    background-color: #4a1531; 
+    color: white; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; padding: 0 40px; 
+    height: 70px; 
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo-small { height: 45px; width: 45px; border-radius: 50%; background: white; object-fit: contain; }
+.welcome-text h2 { margin: 0; font-size: 16px; letter-spacing: 1px; }
+.welcome-text p { margin: 0; font-size: 13px; color: #d1c4cb; }
+.cart-icon-container { font-size: 16px; cursor: pointer; font-weight: bold; }
+.container { padding: 40px; width: 100%; box-sizing: border-box; max-width: 1000px; margin: 0 auto; }
+.main-title { font-size: 32px; font-weight: bold; margin-bottom: 8px; color: #4A1531; }
+.divider { border: 0.5px solid #ccc; margin-bottom: 30px; }
+
+/* Estilos de la Tabla */
+.table-container { background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
+.pedidos-table { width: 100%; border-collapse: collapse; text-align: left; }
+.pedidos-table th { background-color: #f8f9fa; padding: 15px 20px; color: #666; font-weight: 600; border-bottom: 2px solid #eee; }
+.pedidos-table td { padding: 15px 20px; border-bottom: 1px solid #eee; color: #333; vertical-align: middle; }
+.pedidos-table tbody tr:hover { background-color: #fcfcfc; }
+.fw-bold { font-weight: bold; }
+
+/* Badges y Botones */
+.badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #eee; color: #666; }
+.badge-success { background: #d1fae5; color: #065f46; } /* Verde para "pagada" */
+.btn-outline { background: transparent; border: 2px solid #7DE1E1; color: #00CED1; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+.btn-outline:hover { background: #7DE1E1; color: white; }
+.btn-primary { background-color: #4A1531; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+
+/* MODAL / OVERLAY */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: pop-in 0.3s ease-out; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+.modal-header h2 { margin: 0; color: #4A1531; font-size: 22px; }
+.close-btn { background: none; border: none; font-size: 28px; cursor: pointer; color: #999; transition: color 0.2s; }
+.close-btn:hover { color: #333; }
+
+/* Detalles del ticket */
+.line-items { list-style: none; padding: 0; margin: 0; }
+.line-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #ccc; font-size: 15px; }
+.summary-row { display: flex; justify-content: space-between; font-size: 18px; margin-top: 15px; }
+.summary-row.total { font-weight: bold; font-size: 22px; color: #4A1531; }
+
+@keyframes pop-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}

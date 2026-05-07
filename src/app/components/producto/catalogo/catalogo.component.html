@@ -11,13 +11,24 @@
     <input type="text" placeholder="Buscar botella o categoría..." (input)="onSearch($event)">
   </div>
 
-  <div class="cart-icon-container" routerLink="/carrito">
-  <i class="fas fa-shopping-cart"></i>
-  @if (carritoService.totalArticulos() > 0) {
-    <span class="cart-badge">
-      {{ carritoService.totalArticulos() }}
-    </span>
-  }
+  <div class="user-actions" style="display: flex; gap: 25px; align-items: center;">
+    
+    <!-- Botón de Mis Pedidos -->
+    <div class="cart-icon-container" routerLink="/pedidos" style="font-size: 20px;">
+      <i class="fas fa-clipboard-list"></i>
+      <span style="font-size: 14px; margin-left: 5px; font-weight: bold;">Mis Pedidos</span>
+    </div>
+
+    <!-- Tu Carrito de Compras Intacto -->
+    <div class="cart-icon-container" routerLink="/carrito">
+      <i class="fas fa-shopping-cart"></i>
+      @if (carritoService.totalArticulos() > 0) {
+        <span class="cart-badge">
+          {{ carritoService.totalArticulos() }}
+        </span>
+      }
+    </div>
+
   </div>
 </header>
 

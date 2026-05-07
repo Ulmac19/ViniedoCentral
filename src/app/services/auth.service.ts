@@ -8,7 +8,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
   
-  // Asumiendo que esta es tu ruta en Node.js
+  
   private apiUrl = 'http://localhost:3000/api/auth'; 
 
   // Señales para saber en toda la app si hay alguien logueado

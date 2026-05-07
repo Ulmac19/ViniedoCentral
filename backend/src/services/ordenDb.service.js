@@ -27,9 +27,10 @@ function lineaEnvio(items) {
 }
 
 /**
- * Tras crear la orden en PayPal: guarda cabecera + detalle (solo productos con id_producto).
+ * Tras crear la orden en PayPal: guarda cabecera + detalle.
+ * AHORA RECIBE idUsuario EN LOS PARÁMETROS
  */
-async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus }) {
+async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus, idUsuario }) {
   const productos = lineasProducto(items);
   const envio = lineaEnvio(items);
   const subtotalProductos = productos.reduce(
@@ -41,12 +42,15 @@ async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus 
   await query('START TRANSACTION');
   try {
     const folio = folioUnico();
+    
+    // MODIFICACIÓN: Agregamos id_usuario al INSERT y un ? extra en los VALUES
     const resInsert = await query(
       `INSERT INTO ordenes (
-        folio, estado, moneda, subtotal, descuento, costo_envio, total,
+        id_usuario, folio, estado, moneda, subtotal, descuento, costo_envio, total,
         paypal_order_id, paypal_status
-      ) VALUES (?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?)`,
       [
+        idUsuario || null, // Insertamos el ID del dueño de la compra
         folio,
         Number(subtotalProductos.toFixed(2)),
         Number(costoEnvio.toFixed(2)),

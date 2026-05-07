@@ -1,18 +1,27 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environment/environment';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 
 export class PaypalService {
-    private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}/paypal`;
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  private apiUrl = 'http://localhost:3000/api/paypal'; 
 
-    crearOrden(payload: {items: any[]; total: number}){
-        return this.http.post<{id: string, status: string}>(`${this.apiUrl}/create-order`,payload);
-    }
+  // Función para armar las cabeceras con el token
+  private getHeaders() {
+    const token = this.authService.token();
+    return { headers: new HttpHeaders().set('Authorization', `Bearer ${token}`) };
+  }
 
-    capturarOrden(orderId: string){
-        return this.http.post<any>(`${this.apiUrl}/capture-order`,{orderId});
-    }
+  crearOrden(payload: any) {
+    // Agregamos getHeaders() al final
+    return this.http.post<any>(`${this.apiUrl}/crear-orden`, payload, this.getHeaders());
+  }
+
+  capturarOrden(orderId: string) {
+    // Agregamos getHeaders() al final
+    return this.http.post<any>(`${this.apiUrl}/capturar-orden`, { orderId }, this.getHeaders());
+  }
 }

@@ -1,13 +1,12 @@
 
 /* --- NAVBAR COMPACTA --- */
-.navbar-compact {
-  background-color: #4A1531; /* Color vino principal */
+.navbar {
+  background-color: #4A1531; /* Color vino de tu Figma */
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 40px;
-  height: 70px;
+  padding: 15px 40px;
 }
 
 .brand {
@@ -16,12 +15,10 @@
   gap: 12px;
 }
 
-.logo-small {
-  height: 45px;
-  width: 45px;
+.logo {
+  height: 60px;
   border-radius: 50%;
   background: white;
-  object-fit: contain;
 }
 
 .welcome-text h2 { margin: 0; font-size: 16px; letter-spacing: 1px; }

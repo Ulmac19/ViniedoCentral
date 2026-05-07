@@ -24,7 +24,8 @@ async function createOrder(req, res) {
         items,
         total,
         paypalOrderId: order.id,
-        paypalStatus: order.status
+        paypalStatus: order.status,
+        idUsuario: req.usuario.id // <-- PASAMOS EL ID DEL USUARIO DESDE EL TOKEN
       });
     } catch (dbErr) {
       console.error('Orden PayPal creada pero falló guardado en BD:', dbErr.message);

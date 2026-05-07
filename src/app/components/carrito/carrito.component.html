@@ -1,14 +1,6 @@
-<header class="navbar-compact">
+<header class="navbar">
   <div class="brand">
-    <img src="assets/logo-vitis.png" alt="Logo" class="logo-small">
-    <div class="welcome-text">
-      <h2>BIENVENIDO</h2>
-      <p>Juan</p>
-    </div>
-  </div>
-
-  <div class="cart-icon-container" routerLink="/carrito">
-    <i class="fas fa-shopping-cart"></i>
+    <img src="assets/logo-vitis.png" alt="Logo" class="logo">
   </div>
 </header>
 
@@ -49,9 +41,9 @@
 
     <aside class="summary-card">
       <div class="summary-row">
-    <span>{{ totalArticulos() }} artículo(s)</span> 
-    <span>{{ subtotal() | currency:'MXN' }}</span>
-  </div>
+        <span>{{ totalArticulos() }} artículo(s)</span>
+        <span>{{ subtotal() | currency:'MXN' }}</span>
+      </div>
       <div class="summary-row">
         <span>Envío</span>
         <span>{{ costoEnvio() | currency:'MXN' }}</span>
@@ -61,13 +53,21 @@
         <span>Total</span>
         <span>{{ total() | currency:'MXN' }}</span>
       </div>
-      <button class="btn-checkout" (click)="realizarPago()">REALIZAR PAGO</button>
-      <button class="btn-xml" (click)="exportarXML()">EXPORTAR RECIBO XML</button>
+      <div class="paypal-container">
+        @if (cargandoSdk()) {
+        <p>Cargando botón de pago…</p>
+        }
+        @if (errorMsg(); as err) {
+        <p class="error-text">{{ err | json }}</p>
+        }
+        <!-- Aquí se renderizarán los botones de PayPal -->
+        <div #paypalHost></div>
+      </div>
     </aside>
   </div>
 
   <footer class="cart-footer">
-    <button class="back-link" routerLink="/">
+    <button class="back-link" routerLink="/catalogo">
       <i class="fas fa-chevron-left"></i> SEGUIR COMPRANDO
     </button>
   </footer>

@@ -13,6 +13,8 @@ yarn-error.log
 
 /backend/node_modules
 
+CLAUDE.md
+
 # IDEs and editors
 .idea/
 .project
