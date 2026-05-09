@@ -11,9 +11,9 @@ import { Product } from '../../../models/producto.model';
 })
 export class ProductCardComponent {
   @Input() product!: Product;
-  
-  // Ahora el EventEmitter manda un objeto con el producto y la cantidad
+
   @Output() add = new EventEmitter<{producto: Product, cantidad: number}>();
+  @Output() verDetalle = new EventEmitter<Product>();
 
   onAdd(cantidadStr: string) {
     const cantidad = parseInt(cantidadStr) || 1;

@@ -6,20 +6,17 @@
       <p>{{ primerNombre()}}</p>
     </div>
   </div>
-  
+
   <div class="search-bar">
     <input type="text" placeholder="Buscar botella o categoría..." (input)="onSearch($event)">
   </div>
 
   <div class="user-actions" style="display: flex; gap: 25px; align-items: center;">
-    
-    <!-- Botón de Mis Pedidos -->
     <div class="cart-icon-container" routerLink="/pedidos" style="font-size: 20px;">
       <i class="fas fa-clipboard-list"></i>
       <span style="font-size: 14px; margin-left: 5px; font-weight: bold;">Mis Pedidos</span>
     </div>
 
-    <!-- Tu Carrito de Compras Intacto -->
     <div class="cart-icon-container" routerLink="/carrito">
       <i class="fas fa-shopping-cart"></i>
       @if (carritoService.totalArticulos() > 0) {
@@ -28,16 +25,60 @@
         </span>
       }
     </div>
-
   </div>
 </header>
 
 <section class="grid">
   @for (p of filteredProducts(); track p.id) {
-    <app-product-card [product]="p" (add)="agregar($event)"></app-product-card>
+    <app-product-card
+      [product]="p"
+      (add)="agregar($event)"
+      (verDetalle)="abrirModal($event)">
+    </app-product-card>
   } @empty {
     <div class="no-results">
       <p>No se encontraron productos para "{{ searchTerm() }}"</p>
     </div>
   }
 </section>
+
+<!-- Modal de detalle de producto -->
+@if (productoSeleccionado()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+
+      <button class="modal-close" (click)="cerrarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="modal-imagen">
+        <img [src]="productoSeleccionado()!.imageUrl" [alt]="productoSeleccionado()!.name">
+      </div>
+
+      <div class="modal-info">
+        <span class="modal-categoria">{{ productoSeleccionado()!.category }}</span>
+        <h2 class="modal-nombre">{{ productoSeleccionado()!.name }}</h2>
+
+        <p class="modal-descripcion">{{ productoSeleccionado()!.description }}</p>
+
+        <div class="modal-precio-stock">
+          <span class="modal-precio">{{ productoSeleccionado()!.price | currency:'MXN' }}</span>
+          @if (productoSeleccionado()!.inStock) {
+            <span class="modal-stock disponible">
+              <i class="fas fa-check-circle"></i> Disponible
+            </span>
+          } @else {
+            <span class="modal-stock agotado">
+              <i class="fas fa-times-circle"></i> Agotado
+            </span>
+          }
+        </div>
+
+        <div class="modal-nota-fiscal">
+          <i class="fas fa-receipt"></i> Precio incluye IEPS 53% + IVA 16%
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

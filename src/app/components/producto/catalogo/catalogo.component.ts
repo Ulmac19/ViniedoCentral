@@ -1,15 +1,16 @@
 import { Component, inject, computed, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { Product } from '../../../models/producto.model';
 import { RouterLink } from '@angular/router';
 import { ProductsService } from '../../../services/producto.service';
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductCardComponent } from '../producto/producto.component';
-import { AuthService } from '../../../services/auth.service'; 
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [ProductCardComponent, RouterLink],
+  imports: [ProductCardComponent, RouterLink, CurrencyPipe],
   templateUrl: './catalogo.component.html',
   styleUrls: ['./catalogo.component.css'],
 })
@@ -60,5 +61,15 @@ export class CatalogoComponent {
 
   agregar(eventData: {producto: Product, cantidad: number}) {
     this.carritoService.agregar(eventData.producto, eventData.cantidad);
+  }
+
+  productoSeleccionado = signal<Product | null>(null);
+
+  abrirModal(producto: Product) {
+    this.productoSeleccionado.set(producto);
+  }
+
+  cerrarModal() {
+    this.productoSeleccionado.set(null);
   }
 }
