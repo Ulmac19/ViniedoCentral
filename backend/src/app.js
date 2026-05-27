@@ -4,6 +4,7 @@ const productosRoutes = require('./routes/productos.routes');
 const paypalRoutes = require('./routes/paypal.route');
 const authRoutes = require('./routes/auth.routes');
 const oredenesRoutes = require('./routes/ordenes.routes');
+const inventarioRoutes = require('./routes/inventario.routes');
 
 const app = express();
 app.use(cors());
@@ -12,4 +13,5 @@ app.use('/api', productosRoutes);
 app.use('/api/paypal', paypalRoutes);
 app.use('/api/auth/', authRoutes);
 app.use('/api/ordenes', oredenesRoutes);
+app.use('/api/inventario', inventarioRoutes);
 module.exports = app;

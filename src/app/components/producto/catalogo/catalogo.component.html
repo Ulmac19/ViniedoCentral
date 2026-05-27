@@ -11,22 +11,89 @@
     <input type="text" placeholder="Buscar botella o categoría..." (input)="onSearch($event)">
   </div>
 
-  <div class="user-actions" style="display: flex; gap: 25px; align-items: center;">
-    <div class="cart-icon-container" routerLink="/pedidos" style="font-size: 20px;">
-      <i class="fas fa-clipboard-list"></i>
-      <span style="font-size: 14px; margin-left: 5px; font-weight: bold;">Mis Pedidos</span>
-    </div>
-
+  <div class="user-actions">
     <div class="cart-icon-container" routerLink="/carrito">
       <i class="fas fa-shopping-cart"></i>
       @if (carritoService.totalArticulos() > 0) {
-        <span class="cart-badge">
-          {{ carritoService.totalArticulos() }}
-        </span>
+        <span class="cart-badge">{{ carritoService.totalArticulos() }}</span>
       }
     </div>
+
+    <button class="hamburger" (click)="abrirSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 </header>
+
+<!-- Sidebar overlay -->
+@if (sidebarAbierto()) {
+  <div class="sidebar-overlay" (click)="cerrarSidebar()"></div>
+  <aside class="sidebar">
+    <button class="sidebar-close" (click)="cerrarSidebar()">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <div class="sidebar-perfil">
+      @if (!editandoPerfil()) {
+        <div class="sidebar-avatar">{{ inicialUsuario }}</div>
+        <p class="sidebar-nombre">{{ primerNombre() }}</p>
+        <p class="sidebar-email">{{ emailUsuario }}</p>
+        @if (esAdmin) {
+          <span class="sidebar-rol">Administrador</span>
+        }
+        <button class="perfil-btn-editar" (click)="iniciarEdicionPerfil()">
+          <i class="fas fa-pen"></i> Editar perfil
+        </button>
+      } @else {
+        <p class="sidebar-seccion-titulo"><i class="fas fa-user-edit"></i> Editar perfil</p>
+        <div class="perfil-form">
+          <input class="perfil-input" [(ngModel)]="perfilNombre" placeholder="Nombre completo" type="text">
+          <input class="perfil-input" [(ngModel)]="perfilEmail" placeholder="Correo electrónico" type="email">
+          <input class="perfil-input" [(ngModel)]="perfilPassword" placeholder="Nueva contraseña (opcional)" type="password">
+          @if (perfilPassword) {
+            <input class="perfil-input" [(ngModel)]="perfilConfirmPassword" placeholder="Confirmar contraseña" type="password">
+          }
+          <div class="dir-acciones">
+            <button class="dir-btn-guardar" (click)="guardarPerfil()">Guardar</button>
+            <button class="dir-btn-cancelar" (click)="editandoPerfil.set(false)">Cancelar</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Dirección de entrega -->
+    <div class="sidebar-direccion">
+      <p class="sidebar-seccion-titulo"><i class="fas fa-map-marker-alt"></i> Dirección de entrega</p>
+      @if (!editandoDireccion()) {
+        <p class="dir-texto">{{ direccionActual || 'Sin dirección registrada' }}</p>
+        <button class="dir-btn-editar" (click)="iniciarEdicionDireccion()">
+          {{ direccionActual ? 'Cambiar' : 'Agregar dirección' }}
+        </button>
+      } @else {
+        <textarea class="dir-input" [(ngModel)]="nuevaDireccion" placeholder="Calle, número, colonia, ciudad..." rows="3"></textarea>
+        <div class="dir-acciones">
+          <button class="dir-btn-guardar" (click)="guardarDireccion()">Guardar</button>
+          <button class="dir-btn-cancelar" (click)="editandoDireccion.set(false)">Cancelar</button>
+        </div>
+      }
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/pedidos" (click)="cerrarSidebar()">
+        <i class="fas fa-clipboard-list"></i> Mis Pedidos
+      </a>
+      @if (esAdmin) {
+        <a class="sidebar-link" routerLink="/inventario" (click)="cerrarSidebar()">
+          <i class="fas fa-boxes"></i> Inventario
+        </a>
+      }
+    </nav>
+
+    <button class="sidebar-logout" (click)="logout()">
+      <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+    </button>
+  </aside>
+}
 
 <section class="grid">
   @for (p of filteredProducts(); track p.id) {
@@ -41,6 +108,15 @@
     </div>
   }
 </section>
+
+<footer class="footer-legal">
+  <p class="footer-copy">© 2025 Vitis &amp; Byte, S.A. de C.V. Todos los derechos reservados.</p>
+  <div class="footer-links">
+    <button class="footer-link" (click)="abrirLegal('terminos')">Términos y Condiciones</button>
+    <span class="footer-sep">|</span>
+    <button class="footer-link" (click)="abrirLegal('privacidad')">Aviso de Privacidad</button>
+  </div>
+</footer>
 
 <!-- Modal de detalle de producto -->
 @if (productoSeleccionado()) {
@@ -79,6 +155,21 @@
         </div>
       </div>
 
+    </div>
+  </div>
+}
+
+<!-- Modal legal (Términos y Condiciones / Aviso de Privacidad) -->
+@if (modalLegal()) {
+  <div class="modal-overlay" (click)="cerrarLegal()">
+    <div class="modal-legal-box" (click)="$event.stopPropagation()">
+      <div class="modal-legal-header">
+        <h2 class="modal-legal-titulo">{{ tituloLegal() }}</h2>
+        <button class="modal-close" (click)="cerrarLegal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-legal-body" [innerHTML]="contenidoLegal()"></div>
     </div>
   </div>
 }

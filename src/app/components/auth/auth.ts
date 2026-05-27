@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { TERMINOS_Y_CONDICIONES } from '../../legal/terminos.content';
 
 @Component({
   selector: 'app-auth',
@@ -22,41 +23,64 @@ export class AuthComponent {
   nombre = '';
   email = '';
   password = '';
+  aceptaMayorEdad = false;
+  cargando = false;
+  modalTerminos = false;
+  readonly terminosContenido = TERMINOS_Y_CONDICIONES;
+
+  abrirTerminos(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.modalTerminos = true;
+  }
 
   cambiarModo() {
     this.esLogin = !this.esLogin;
     this.mensajeError = '';
+    this.aceptaMayorEdad = false;
   }
 
   onSubmit() {
-    this.mensajeError = ''; 
+    if (this.cargando) return;
+    this.cargando = true;
+    this.mensajeError = '';
 
     if (this.esLogin) {
-      // Lógica de Login
       this.authService.login(this.email, this.password).subscribe({
         next: () => {
-          this.router.navigate(['/catalogo']); 
+          this.cargando = false;
+          const usuario = this.authService.usuarioActual();
+          const destino = usuario?.rol === 'administrador' ? '/inventario' : '/catalogo';
+          this.router.navigate([destino]);
         },
         error: (err) => {
+          this.cargando = false;
           this.mensajeError = err.error?.error || 'Error al iniciar sesión';
         }
       });
     } else {
-      // LÓGICA DE REGISTRO (SIGNIN)
-      this.authService.registro(this.nombre, this.email, this.password).subscribe({
+      const emailRegistrado = this.email;
+      const passwordRegistrado = this.password;
+      this.authService.registro(this.nombre, emailRegistrado, passwordRegistrado).subscribe({
         next: () => {
-          // 1. En lugar del alert, simplemente cambiamos a modo login
-          this.esLogin = true; 
-          
-          // 2. Opcional: Limpiamos el nombre pero dejamos el email 
-          // para que el usuario solo tenga que poner su contraseña
-          this.nombre = '';
-          this.password = '';
-          
-          // Podrías poner un mensaje de éxito discreto en la variable de error si quisieras
-          // this.mensajeError = 'Cuenta creada. Por favor, inicia sesión.';
+          // Auto-login tras registro para no pedir credenciales dos veces
+          this.authService.login(emailRegistrado, passwordRegistrado).subscribe({
+            next: () => {
+              this.cargando = false;
+              this.router.navigate(['/catalogo']);
+            },
+            error: () => {
+              // Si el auto-login falla, manda al formulario de login
+              this.cargando = false;
+              this.esLogin = true;
+              this.nombre = '';
+              this.password = '';
+              this.aceptaMayorEdad = false;
+            }
+          });
         },
         error: (err) => {
+          this.cargando = false;
           this.mensajeError = err.error?.error || 'Error al registrar usuario';
         }
       });

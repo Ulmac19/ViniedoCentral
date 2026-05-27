@@ -1,8 +1,11 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Product } from '../models/producto.model';
 
-/** Coherente con ProductsService: precio_neto × 1.53 (IEPS) × 1.16 (IVA) = precio final */
-const FACTOR_PRECIO_FINAL = 1.7748;
+function tasaIEPS(graduacion: number): number {
+  if (graduacion <= 14) return 0.265;
+  if (graduacion <= 20) return 0.30;
+  return 0.53;
+}
 
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
@@ -48,16 +51,14 @@ export class CarritoService {
     this.productosSignal.set([]);
   }
 
-  /** Recupera neto, IEPS e IVA a partir del precio unitario ya con impuestos (misma fórmula que el catálogo). */
-  private desgloseImpuestosDesdePrecioFinal(precioConImpuestos: number): {
-    neto: number;
-    ieps: number;
-    iva: number;
+  private desgloseImpuestos(producto: Product): {
+    neto: number; ieps: number; iva: number; tasa: number;
   } {
-    const neto = precioConImpuestos / FACTOR_PRECIO_FINAL;
-    const ieps = neto * 0.53;
-    const iva = neto * 1.53 * 0.16;
-    return { neto, ieps, iva };
+    const neto = producto.precioNeto;
+    const tasa = tasaIEPS(producto.graduacionAlcoholica);
+    const ieps = neto * tasa;
+    const iva = neto * (1 + tasa) * 0.16;
+    return { neto, ieps, iva, tasa };
   }
 
   private fmt(n: number): string {
@@ -75,10 +76,11 @@ export class CarritoService {
 
     this.productosSignal().forEach(p => {
       const totalPorProducto = p.price * p.cantidad;
-      const u = this.desgloseImpuestosDesdePrecioFinal(p.price);
+      const u = this.desgloseImpuestos(p);
       const netoLinea = u.neto * p.cantidad;
       const iepsLinea = u.ieps * p.cantidad;
       const ivaLinea = u.iva * p.cantidad;
+      const pctLabel = `${Math.round(u.tasa * 100)}pct`;
       sumaNeto += netoLinea;
       sumaIeps += iepsLinea;
       sumaIva += ivaLinea;
@@ -89,7 +91,7 @@ export class CarritoService {
       xml += `      <cantidad>${p.cantidad}</cantidad>\n`;
       xml += `      <impuestos>\n`;
       xml += `        <subtotal_neto>${this.fmt(u.neto)}</subtotal_neto>\n`;
-      xml += `        <ieps_53pct>${this.fmt(u.ieps)}</ieps_53pct>\n`;
+      xml += `        <ieps_${pctLabel}>${this.fmt(u.ieps)}</ieps_${pctLabel}>\n`;
       xml += `        <iva_16pct>${this.fmt(u.iva)}</iva_16pct>\n`;
       xml += `      </impuestos>\n`;
       xml += `      <subtotal_producto>${this.fmt(totalPorProducto)}</subtotal_producto>\n`;

@@ -1,0 +1,119 @@
+<div class="inventario-container">
+  <div class="inventario-header">
+    <h1>Inventario de Productos</h1>
+    <div class="header-acciones">
+      <a routerLink="/catalogo" class="btn-volver">← Volver al catálogo</a>
+    </div>
+  </div>
+
+  @if (mensaje()) {
+    <div class="mensaje-error">{{ mensaje() }}</div>
+  }
+
+  <div class="tabla-wrapper">
+    <table class="tabla-productos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>SKU</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Precio Neto</th>
+          <th>Stock</th>
+          <th>Activo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (producto of productos(); track producto.id_producto) {
+          <tr [class.inactivo]="!producto.activo">
+            <td>{{ producto.id_producto }}</td>
+            <td>{{ producto.sku }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.categoria }}</td>
+            <td>{{ producto.precio_neto | currency:'MXN':'symbol-narrow' }}</td>
+            <td [class.alerta-stock]="producto.stock <= producto.umbral_alerta">{{ producto.stock }}</td>
+            <td>{{ producto.activo ? 'Sí' : 'No' }}</td>
+            <td class="acciones">
+              <button class="btn-editar" (click)="abrirFormularioEdicion(producto)">Editar</button>
+              <button
+                [class]="producto.activo ? 'btn-eliminar' : 'btn-activar'"
+                (click)="toggleActivo(producto)">
+                {{ producto.activo ? 'Desactivar' : 'Activar' }}
+              </button>
+            </td>
+          </tr>
+        }
+        @empty {
+          <tr><td colspan="8" class="sin-datos">No hay productos registrados.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="agregar-footer">
+    <button class="btn-agregar" (click)="abrirFormularioNuevo()">+ Agregar Producto</button>
+  </div>
+</div>
+
+@if (modalAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>{{ modoEdicion() ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+
+      @if (mensaje()) {
+        <p class="mensaje-error">{{ mensaje() }}</p>
+      }
+
+      <div class="campos-grid">
+        <div class="campo">
+          <label>SKU *</label>
+          <input type="text" [value]="formulario().sku" (input)="actualizarCampo('sku', $any($event.target).value)" placeholder="Ej. VIN-001" />
+        </div>
+        <div class="campo">
+          <label>Categoría *</label>
+          <input type="text" [value]="formulario().categoria" (input)="actualizarCampo('categoria', $any($event.target).value)" placeholder="Ej. Tinto, Blanco" />
+        </div>
+        <div class="campo campo-full">
+          <label>Nombre *</label>
+          <input type="text" [value]="formulario().nombre" (input)="actualizarCampo('nombre', $any($event.target).value)" placeholder="Nombre del producto" />
+        </div>
+        <div class="campo campo-full">
+          <label>Descripción</label>
+          <input type="text" [value]="formulario().descripcion" (input)="actualizarCampo('descripcion', $any($event.target).value)" placeholder="Descripción breve" />
+        </div>
+        <div class="campo campo-full">
+          <label>URL de imagen</label>
+          <input type="text" [value]="formulario().imagen_url" (input)="actualizarCampo('imagen_url', $any($event.target).value)" placeholder="https://..." />
+        </div>
+        <div class="campo">
+          <label>Precio Neto (MXN) *</label>
+          <input type="number" [value]="formulario().precio_neto" (input)="actualizarCampo('precio_neto', +$any($event.target).value)" min="0" step="0.01" />
+        </div>
+        <div class="campo">
+          <label>Stock</label>
+          <input type="number" [value]="formulario().stock" (input)="actualizarCampo('stock', +$any($event.target).value)" min="0" />
+        </div>
+        <div class="campo">
+          <label>Volumen (ml)</label>
+          <input type="number" [value]="formulario().volumen_ml" (input)="actualizarCampo('volumen_ml', +$any($event.target).value)" min="0" />
+        </div>
+        <div class="campo">
+          <label>Graduación alcohólica (%)</label>
+          <input type="number" [value]="formulario().graduacion_alcoholica" (input)="actualizarCampo('graduacion_alcoholica', +$any($event.target).value)" min="0" step="0.01" />
+        </div>
+        <div class="campo">
+          <label>Umbral de alerta stock</label>
+          <input type="number" [value]="formulario().umbral_alerta" (input)="actualizarCampo('umbral_alerta', +$any($event.target).value)" min="0" />
+        </div>
+      </div>
+
+      <div class="modal-botones">
+        <button class="btn-guardar" (click)="guardar()">
+          {{ modoEdicion() ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+}

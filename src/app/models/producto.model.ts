@@ -7,4 +7,6 @@ export interface Product{
     description: string;
     inStock: boolean;
     cantidad: number;
+    precioNeto: number;
+    graduacionAlcoholica: number;
 }

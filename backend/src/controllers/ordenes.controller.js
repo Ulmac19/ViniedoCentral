@@ -6,9 +6,9 @@ const getMisPedidos = async (req, res) => {
         const idUsuario = req.usuario.id; // Este ID viene seguro desde el token
         
         const [ordenes] = await db.promise().query(
-            `SELECT id_orden, folio, estado, total, fecha_creacion 
-             FROM ordenes 
-             WHERE id_usuario = ? 
+            `SELECT id_orden, folio, estado, total, fecha_creacion, direccion_entrega
+             FROM ordenes
+             WHERE id_usuario = ?
              ORDER BY fecha_creacion DESC`,
             [idUsuario]
         );

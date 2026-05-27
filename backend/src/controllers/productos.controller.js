@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 const getProductos = (req, res) =>{
-    const sql = 'SELECT * FROM productos';
+    const sql = 'SELECT * FROM productos WHERE activo = 1';
 
     db.query(sql, (err, results) => {
         if (err) {

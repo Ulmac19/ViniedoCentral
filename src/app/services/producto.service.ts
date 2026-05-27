@@ -10,25 +10,30 @@ export class ProductsService {
   // Tu ruta hacia el backend
   private apiUrl = 'http://localhost:3000/api/productos';
 
+  private tasaIEPS(graduacion: number): number {
+    if (graduacion <= 14) return 0.265;
+    if (graduacion <= 20) return 0.30;
+    return 0.53;
+  }
+
   getAll(): Observable<Product[]> {
-    // Usamos <any[]> porque los datos de la BD vienen con otros nombres
     return this.http.get<any[]>(this.apiUrl).pipe(
-      map(productosDB => 
+      map(productosDB =>
         productosDB.map(p => {
-          // APLICACIÓN DEL ANEXO FISCAL
-          // Precio Neto * IEPS (53%) * IVA (16%) = Precio Final Público
-          // 1.53 * 1.16 = 1.7748
-          const precioFinal = p.precio_neto * 1.7748;
+          const tasa = this.tasaIEPS(p.graduacion_alcoholica ?? 0);
+          const precioFinal = p.precio_neto * (1 + tasa) * 1.16;
 
           return {
-            id: p.id_producto,        // Traducimos id_producto -> id
-            name: p.nombre,           // Traducimos nombre -> name
-            price: precioFinal,       // Mandamos el precio ya con impuestos
-            imageUrl: p.imagen_url,   // Traducimos imagen_url -> imageUrl
-            category: p.categoria,    // Traducimos categoria -> category
+            id: p.id_producto,
+            name: p.nombre,
+            price: precioFinal,
+            imageUrl: p.imagen_url,
+            category: p.categoria,
             description: p.descripcion,
-            inStock: p.stock > 0,     // Si el stock es mayor a 0, hay inventario
-            cantidad: 1               // Requisito para el carrito
+            inStock: p.stock > 0,
+            cantidad: 1,
+            precioNeto: p.precio_neto,
+            graduacionAlcoholica: p.graduacion_alcoholica ?? 0,
           };
         })
       )

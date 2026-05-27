@@ -83,4 +83,65 @@ const iniciarSesion = async (req, res) => {
     }
 };
 
-module.exports = { registrarUsuario, iniciarSesion };
+const obtenerPerfil = async (req, res) => {
+    try {
+        const [rows] = await db.promise().query(
+            'SELECT id_usuario, nombre, email, rol, direccion_entrega FROM usuarios WHERE id_usuario = ?',
+            [req.usuario.id]
+        );
+        if (!rows.length) return res.status(404).json({ error: 'Usuario no encontrado.' });
+        res.json(rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+};
+
+const actualizarPerfil = async (req, res) => {
+    try {
+        const { nombre, email, password } = req.body;
+        if (!nombre?.trim() || !email?.trim()) {
+            return res.status(400).json({ error: 'Nombre y email son obligatorios.' });
+        }
+        const [existing] = await db.promise().query(
+            'SELECT id_usuario FROM usuarios WHERE email = ? AND id_usuario != ?',
+            [email.trim(), req.usuario.id]
+        );
+        if (existing.length > 0) {
+            return res.status(400).json({ error: 'El correo ya está registrado por otro usuario.' });
+        }
+        if (password) {
+            const passwordHash = await bcrypt.hash(password, 12);
+            await db.promise().query(
+                'UPDATE usuarios SET nombre = ?, email = ?, password_hash = ? WHERE id_usuario = ?',
+                [nombre.trim(), email.trim(), passwordHash, req.usuario.id]
+            );
+        } else {
+            await db.promise().query(
+                'UPDATE usuarios SET nombre = ?, email = ? WHERE id_usuario = ?',
+                [nombre.trim(), email.trim(), req.usuario.id]
+            );
+        }
+        res.json({ mensaje: 'Perfil actualizado correctamente.', nombre: nombre.trim(), email: email.trim() });
+    } catch (error) {
+        console.error('Error actualizando perfil:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+};
+
+const actualizarDireccion = async (req, res) => {
+    try {
+        const { direccion_entrega } = req.body;
+        if (!direccion_entrega || !direccion_entrega.trim()) {
+            return res.status(400).json({ error: 'La dirección no puede estar vacía.' });
+        }
+        await db.promise().query(
+            'UPDATE usuarios SET direccion_entrega = ? WHERE id_usuario = ?',
+            [direccion_entrega.trim(), req.usuario.id]
+        );
+        res.json({ mensaje: 'Dirección actualizada correctamente.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+};
+
+module.exports = { registrarUsuario, iniciarSesion, obtenerPerfil, actualizarPerfil, actualizarDireccion };

@@ -13,11 +13,13 @@ import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CarritoService } from '../../services/carrito.service';
 import { PaypalService } from '../../services/paypal.service';
+import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-carrito',
   standalone: true,
-  imports: [CurrencyPipe,JsonPipe, RouterLink], 
+  imports: [CurrencyPipe, JsonPipe, RouterLink, FormsModule],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
@@ -28,6 +30,7 @@ export class CarritoComponent implements AfterViewInit {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly paypalApi = inject(PaypalService);
+  readonly authService = inject(AuthService);
 
   // Propiedades del carrito
   productos = this.carritoService.productos; 
@@ -40,11 +43,28 @@ export class CarritoComponent implements AfterViewInit {
   readonly cargandoSdk = signal(true);
   readonly errorMsg = signal<string | null>(null);
 
+  // Dirección de entrega
+  readonly editandoDireccion = signal(false);
+  nuevaDireccion = '';
+
+  get direccion() { return this.authService.direccion(); }
+
+  iniciarEdicionDireccion() {
+    this.nuevaDireccion = this.authService.direccion();
+    this.editandoDireccion.set(true);
+  }
+
+  guardarDireccion() {
+    if (!this.nuevaDireccion.trim()) return;
+    this.authService.actualizarDireccion(this.nuevaDireccion.trim()).subscribe({
+      next: () => this.editandoDireccion.set(false),
+      error: () => alert('Error al guardar la dirección')
+    });
+  }
+
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-    // Solo inicializamos PayPal si hay productos en el carrito
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.authService.cargarDireccion().subscribe();
     if (this.productos().length > 0) {
       void this.inicializarPaypal();
     } else {

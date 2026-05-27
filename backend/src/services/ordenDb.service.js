@@ -39,24 +39,33 @@ async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus,
   );
   const costoEnvio = envio ? Number(envio.cantidad) * Number(envio.precio) : 0;
 
+  // Obtener dirección de entrega guardada en el perfil del usuario
+  let direccionEntrega = null;
+  if (idUsuario) {
+    const filaUsuario = await query(
+      'SELECT direccion_entrega FROM usuarios WHERE id_usuario = ? LIMIT 1',
+      [idUsuario],
+    );
+    direccionEntrega = filaUsuario[0]?.direccion_entrega || null;
+  }
+
   await query('START TRANSACTION');
   try {
     const folio = folioUnico();
-    
-    // MODIFICACIÓN: Agregamos id_usuario al INSERT y un ? extra en los VALUES
     const resInsert = await query(
       `INSERT INTO ordenes (
         id_usuario, folio, estado, moneda, subtotal, descuento, costo_envio, total,
-        paypal_order_id, paypal_status
-      ) VALUES (?, ?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?)`,
+        paypal_order_id, paypal_status, direccion_entrega
+      ) VALUES (?, ?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?, ?)`,
       [
-        idUsuario || null, // Insertamos el ID del dueño de la compra
+        idUsuario || null,
         folio,
         Number(subtotalProductos.toFixed(2)),
         Number(costoEnvio.toFixed(2)),
         Number(Number(total).toFixed(2)),
         paypalOrderId,
         paypalStatus || null,
+        direccionEntrega,
       ],
     );
     const idOrden = resInsert.insertId;
@@ -137,6 +146,18 @@ async function persistirCapturaPaypal(orderIdPaypal, captureData) {
         JSON.stringify(captureData),
       ],
     );
+
+    // Reducir stock de cada producto comprado
+    const detalles = await query(
+      'SELECT id_producto, cantidad FROM orden_detalle WHERE id_orden = ?',
+      [idOrden],
+    );
+    for (const detalle of detalles) {
+      await query(
+        'UPDATE productos SET stock = stock - ? WHERE id_producto = ?',
+        [detalle.cantidad, detalle.id_producto],
+      );
+    }
 
     await query('COMMIT');
     return { guardado: true, idOrden, captureId };

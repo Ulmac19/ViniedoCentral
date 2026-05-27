@@ -30,6 +30,7 @@
             <th>Fecha</th>
             <th>Total</th>
             <th>Estado</th>
+            <th>Dirección</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -44,6 +45,7 @@
                   {{ pedido.estado?.toUpperCase() }}
                 </span>
               </td>
+              <td class="direccion-celda">{{ pedido.direccion_entrega || '—' }}</td>
               <td>
                 <button class="btn-outline" (click)="verDetalle(pedido.id_orden)">
                   Ver detalle
@@ -70,6 +72,9 @@
       <div class="modal-body">
         <p><strong>Folio:</strong> {{ pedidoSeleccionado()?.orden.folio }}</p>
         <p><strong>Fecha:</strong> {{ pedidoSeleccionado()?.orden.fecha_creacion | date:'medium' }}</p>
+        @if (pedidoSeleccionado()?.orden.direccion_entrega) {
+          <p><strong>Dirección de entrega:</strong> {{ pedidoSeleccionado()?.orden.direccion_entrega }}</p>
+        }
         <hr>
         
         <ul class="line-items">

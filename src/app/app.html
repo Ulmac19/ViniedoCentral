@@ -1,1 +1,47 @@
-<router-outlet></router-outlet>
+@if (!edadVerificada()) {
+  <div class="age-gate">
+    @if (!menorDeEdad()) {
+      <div class="age-gate-box">
+        <img src="assets/logo-vitis.png" alt="Vitis & Byte" class="age-gate-logo">
+        <h1 class="age-gate-marca">VITIS &amp; BYTE</h1>
+        <p class="age-gate-tagline">Tu cava exclusiva en línea</p>
+
+        <div class="age-gate-divider"></div>
+
+        <p class="age-gate-aviso">
+          La venta de bebidas alcohólicas está reservada exclusivamente para personas mayores de 18 años,
+          conforme a la <strong>NOM-142-SSA1/SCFI-2014</strong> y la <strong>Ley General de Salud</strong>.
+        </p>
+
+        <p class="age-gate-pregunta">¿Cuál es tu edad?</p>
+
+        <div class="age-gate-botones">
+          <button class="btn-mayor" (click)="confirmarMayorEdad()">
+            <i class="fas fa-check-circle"></i> Tengo 18 años o más
+          </button>
+          <button class="btn-menor" (click)="confirmarMenorEdad()">
+            Soy menor de edad
+          </button>
+        </div>
+
+        <p class="age-gate-legal">
+          Al ingresar confirmas haber leído nuestro <strong>Aviso de Privacidad</strong>
+          y aceptas los <strong>Términos y Condiciones</strong>.
+        </p>
+      </div>
+    } @else {
+      <div class="age-gate-box age-gate-bloqueado">
+        <div class="age-gate-block-icon">
+          <i class="fas fa-ban"></i>
+        </div>
+        <h2>Acceso Restringido</h2>
+        <p>Lo sentimos, este sitio está reservado exclusivamente para personas mayores de 18 años.</p>
+        <p class="age-gate-legal">
+          En cumplimiento con la <strong>NOM-142-SSA1/SCFI-2014</strong> y la <strong>Ley General de Salud</strong>.
+        </p>
+      </div>
+    }
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}

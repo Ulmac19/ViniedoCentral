@@ -53,14 +53,37 @@
         <span>Total</span>
         <span>{{ total() | currency:'MXN' }}</span>
       </div>
+      <!-- Dirección de entrega -->
+      <div class="direccion-card">
+        <p class="direccion-titulo"><i class="fas fa-map-marker-alt"></i> Dirección de entrega</p>
+        @if (!editandoDireccion()) {
+          @if (direccion) {
+            <p class="direccion-texto">{{ direccion }}</p>
+          } @else {
+            <p class="direccion-vacia">Sin dirección registrada</p>
+          }
+          <button class="direccion-btn" (click)="iniciarEdicionDireccion()">
+            {{ direccion ? 'Cambiar' : 'Agregar dirección' }}
+          </button>
+        } @else {
+          <textarea class="direccion-input" [(ngModel)]="nuevaDireccion" rows="3" placeholder="Calle, número, colonia, ciudad..."></textarea>
+          <div class="direccion-acciones">
+            <button class="direccion-guardar" (click)="guardarDireccion()">Guardar</button>
+            <button class="direccion-cancelar" (click)="editandoDireccion.set(false)">Cancelar</button>
+          </div>
+        }
+      </div>
+
       <div class="paypal-container">
+        @if (!direccion) {
+          <p class="aviso-direccion"><i class="fas fa-exclamation-circle"></i> Agrega una dirección de entrega antes de pagar.</p>
+        }
         @if (cargandoSdk()) {
-        <p>Cargando botón de pago…</p>
+          <p>Cargando botón de pago…</p>
         }
         @if (errorMsg(); as err) {
-        <p class="error-text">{{ err | json }}</p>
+          <p class="error-text">{{ err | json }}</p>
         }
-        <!-- Aquí se renderizarán los botones de PayPal -->
         <div #paypalHost></div>
       </div>
     </aside>

@@ -3,23 +3,45 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 
+/**
+ * Servicio central de autenticación.
+ * Gestiona el ciclo completo de sesión: login, registro, logout y persistencia.
+ *
+ * Estado reactivo (señales públicas):
+ *   token         → JWT activo; null si no hay sesión. Lo consume authGuard.
+ *   usuarioActual → Datos del usuario logueado (id, nombre, rol).
+ *
+ * Persistencia:
+ *   Usa localStorage (claves token_vitis / user_vitis) para sobrevivir recargas.
+ *   isPlatformBrowser evita errores en SSR, donde localStorage no existe.
+ *
+ * Flujo típico:
+ *   1. Al iniciar la app el constructor llama cargarSesionGuardada() →
+ *      rehidrata las señales desde localStorage si el usuario ya tenía sesión.
+ *   2. login() hace POST /api/auth/login; con tap() guarda token y usuario
+ *      en señales y localStorage sin necesidad de suscripción manual.
+ *   3. logout() limpia señales y localStorage, dejando la app en estado inicial.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
-  private platformId = inject(PLATFORM_ID);
-  
-  
-  private apiUrl = 'http://localhost:3000/api/auth'; 
 
-  // Señales para saber en toda la app si hay alguien logueado
+  // PLATFORM_ID permite detectar si estamos en navegador o en servidor (SSR)
+  private platformId = inject(PLATFORM_ID);
+
+  private apiUrl = 'http://localhost:3000/api/auth';
+
+  // Señales públicas: cualquier componente puede leerlas sin subscribe()
   usuarioActual = signal<any>(null);
   token = signal<string | null>(null);
+  direccion = signal<string>('');
 
   constructor() {
+    // Rehidrata la sesión al arrancar; así el guard no ve token=null en el primer ciclo
     this.cargarSesionGuardada();
   }
 
-  // 1. Iniciar Sesión (Login)
+  /** Autentica al usuario. El pipe tap persiste la sesión como efecto secundario. */
   login(email: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
       tap(respuesta => {
@@ -28,22 +50,51 @@ export class AuthService {
     );
   }
 
-  // 2. Registrarse (Signin)
+  /** Crea una cuenta nueva. No inicia sesión automáticamente; el componente redirige al login. */
   registro(nombre: string, email: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/registro`, { nombre, email, password });
   }
 
-  // 3. Cerrar Sesión
+  private authHeaders() {
+    return { Authorization: `Bearer ${this.token()}` };
+  }
+
+  cargarDireccion() {
+    return this.http.get<any>(`${this.apiUrl}/perfil`, { headers: this.authHeaders() }).pipe(
+      tap(perfil => this.direccion.set(perfil.direccion_entrega ?? ''))
+    );
+  }
+
+  actualizarPerfil(datos: { nombre: string; email: string; password?: string }) {
+    return this.http.put<any>(`${this.apiUrl}/perfil`, datos, { headers: this.authHeaders() }).pipe(
+      tap(respuesta => {
+        const actualizado = { ...this.usuarioActual(), nombre: respuesta.nombre, email: respuesta.email };
+        this.usuarioActual.set(actualizado);
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('user_vitis', JSON.stringify(actualizado));
+        }
+      })
+    );
+  }
+
+  actualizarDireccion(direccion_entrega: string) {
+    return this.http.put<any>(`${this.apiUrl}/direccion`, { direccion_entrega }, { headers: this.authHeaders() }).pipe(
+      tap(() => this.direccion.set(direccion_entrega))
+    );
+  }
+
+  /** Destruye la sesión local. No llama al backend porque los JWT son stateless. */
   logout() {
     this.usuarioActual.set(null);
     this.token.set(null);
+    this.direccion.set('');
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token_vitis');
       localStorage.removeItem('user_vitis');
     }
   }
 
-  // --- Funciones internas ---
+  /** Escribe el estado de sesión en señales y en localStorage para persistirlo entre recargas. */
   private guardarSesion(token: string, usuario: any) {
     this.token.set(token);
     this.usuarioActual.set(usuario);
@@ -53,6 +104,7 @@ export class AuthService {
     }
   }
 
+  /** Lee localStorage al iniciar y restaura las señales si existía una sesión previa. */
   private cargarSesionGuardada() {
     if (isPlatformBrowser(this.platformId)) {
       const tokenGuardado = localStorage.getItem('token_vitis');
