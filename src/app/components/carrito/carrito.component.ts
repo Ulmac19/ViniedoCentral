@@ -15,6 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CarritoService } from '../../services/carrito.service';
 import { PaypalService } from '../../services/paypal.service';
 import { DireccionesService, Direccion } from '../../services/direcciones.service';
+import { OrdenesService } from '../../services/ordenes.service';
 
 @Component({
   selector: 'app-carrito',
@@ -30,6 +31,7 @@ export class CarritoComponent implements AfterViewInit {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly paypalApi = inject(PaypalService);
+  private readonly ordenesService = inject(OrdenesService);
   private readonly direccionesService = inject(DireccionesService);
 
   // Propiedades del carrito
@@ -42,6 +44,8 @@ export class CarritoComponent implements AfterViewInit {
   // Señales para el estado de PayPal
   readonly cargandoSdk = signal(true);
   readonly errorMsg = signal<string | null>(null);
+  readonly reciboEnviado = signal(false);
+  readonly enviandoRecibo = signal(false);
 
   // Direcciones de entrega
   readonly direcciones = signal<Direccion[]>([]);
@@ -177,12 +181,20 @@ export class CarritoComponent implements AfterViewInit {
           onApprove: async (data: { orderID: string }) => {
             try {
               await firstValueFrom(this.paypalApi.capturarOrden(data.orderID));
-              
-              // Exportamos el XML automáticamente y limpiamos
-              this.exportarXML();
               this.carritoService.vaciarCarrito();
-              
-              void this.router.navigate(['/catalogo'], { queryParams: { pago: 'ok' } });
+
+              this.enviandoRecibo.set(true);
+              try {
+                await firstValueFrom(this.ordenesService.enviarRecibo(data.orderID));
+                this.reciboEnviado.set(true);
+              } catch {
+                // El pago ya se procesó — el recibo es secundario
+                this.errorMsg.set('Pago exitoso, pero no se pudo enviar el recibo por correo.');
+              } finally {
+                this.enviandoRecibo.set(false);
+              }
+
+              setTimeout(() => void this.router.navigate(['/catalogo']), 2500);
             } catch (e) {
               this.errorMsg.set(this.mensajeDeErrorHttp(e));
               throw e;

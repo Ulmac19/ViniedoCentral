@@ -65,6 +65,7 @@ export class CarritoService {
     return (Math.round(n * 100) / 100).toFixed(2);
   }
 
+  /** @deprecated Reemplazado por el envío de CFDI por correo en el backend */
   exportarXML() {
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<pedido>\n`;

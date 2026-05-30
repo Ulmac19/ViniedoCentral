@@ -39,24 +39,14 @@ async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus,
   );
   const costoEnvio = envio ? Number(envio.cantidad) * Number(envio.precio) : 0;
 
-  // Obtener dirección de entrega guardada en el perfil del usuario
-  let direccionEntrega = null;
-  if (idUsuario) {
-    const filaUsuario = await query(
-      'SELECT direccion_entrega FROM usuarios WHERE id_usuario = ? LIMIT 1',
-      [idUsuario],
-    );
-    direccionEntrega = filaUsuario[0]?.direccion_entrega || null;
-  }
-
   await query('START TRANSACTION');
   try {
     const folio = folioUnico();
     const resInsert = await query(
       `INSERT INTO ordenes (
         id_usuario, folio, estado, moneda, subtotal, descuento, costo_envio, total,
-        paypal_order_id, paypal_status, direccion_entrega
-      ) VALUES (?, ?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?, ?)`,
+        paypal_order_id, paypal_status
+      ) VALUES (?, ?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?)`,
       [
         idUsuario || null,
         folio,
@@ -65,7 +55,6 @@ async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus,
         Number(Number(total).toFixed(2)),
         paypalOrderId,
         paypalStatus || null,
-        direccionEntrega,
       ],
     );
     const idOrden = resInsert.insertId;

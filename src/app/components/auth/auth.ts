@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -15,18 +15,16 @@ export class AuthComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Variables para cambiar el modo de la pantalla
-  esLogin = true; 
-  mensajeError = '';
+  esLogin = true;
+  mensajeError = signal('');
+  cargando = signal(false);
+  modalTerminos = false;
+  readonly terminosContenido = TERMINOS_Y_CONDICIONES;
 
-  // Variables del formulario
   nombre = '';
   email = '';
   password = '';
   aceptaMayorEdad = false;
-  cargando = false;
-  modalTerminos = false;
-  readonly terminosContenido = TERMINOS_Y_CONDICIONES;
 
   abrirTerminos(event: Event) {
     event.preventDefault();
@@ -36,26 +34,26 @@ export class AuthComponent {
 
   cambiarModo() {
     this.esLogin = !this.esLogin;
-    this.mensajeError = '';
+    this.mensajeError.set('');
     this.aceptaMayorEdad = false;
   }
 
   onSubmit() {
-    if (this.cargando) return;
-    this.cargando = true;
-    this.mensajeError = '';
+    if (this.cargando()) return;
+    this.cargando.set(true);
+    this.mensajeError.set('');
 
     if (this.esLogin) {
       this.authService.login(this.email, this.password).subscribe({
         next: () => {
-          this.cargando = false;
+          this.cargando.set(false);
           const usuario = this.authService.usuarioActual();
           const destino = usuario?.rol === 'administrador' ? '/inventario' : '/catalogo';
           this.router.navigate([destino]);
         },
         error: (err) => {
-          this.cargando = false;
-          this.mensajeError = err.error?.error || 'Error al iniciar sesión';
+          this.cargando.set(false);
+          this.mensajeError.set(err.error?.error || 'Error al iniciar sesión');
         }
       });
     } else {
@@ -63,15 +61,13 @@ export class AuthComponent {
       const passwordRegistrado = this.password;
       this.authService.registro(this.nombre, emailRegistrado, passwordRegistrado).subscribe({
         next: () => {
-          // Auto-login tras registro para no pedir credenciales dos veces
           this.authService.login(emailRegistrado, passwordRegistrado).subscribe({
             next: () => {
-              this.cargando = false;
+              this.cargando.set(false);
               this.router.navigate(['/catalogo']);
             },
             error: () => {
-              // Si el auto-login falla, manda al formulario de login
-              this.cargando = false;
+              this.cargando.set(false);
               this.esLogin = true;
               this.nombre = '';
               this.password = '';
@@ -80,8 +76,8 @@ export class AuthComponent {
           });
         },
         error: (err) => {
-          this.cargando = false;
-          this.mensajeError = err.error?.error || 'Error al registrar usuario';
+          this.cargando.set(false);
+          this.mensajeError.set(err.error?.error || 'Error al registrar usuario');
         }
       });
     }

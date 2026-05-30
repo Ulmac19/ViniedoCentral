@@ -23,4 +23,12 @@ export class OrdenesService {
   getDetallePedido(idOrden: number) {
     return this.http.get<any>(`${this.apiUrl}/mis-pedidos/${idOrden}`, { headers: this.getHeaders() });
   }
+
+  enviarRecibo(paypalOrderId: string) {
+    return this.http.post<any>(
+      `${this.apiUrl}/enviar-recibo`,
+      { paypalOrderId },
+      { headers: this.getHeaders() }
+    );
+  }
 }

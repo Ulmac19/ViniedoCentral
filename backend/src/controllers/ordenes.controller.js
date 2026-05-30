@@ -1,4 +1,6 @@
 const db = require('../config/db');
+const { generarCFDI }     = require('../services/cfdi.service');
+const { enviarReciboCFDI } = require('../services/email.service');
 
 // Obtener la lista general de pedidos del usuario logueado
 const getMisPedidos = async (req, res) => {
@@ -52,7 +54,70 @@ const getDetallePedido = async (req, res) => {
     }
 };
 
+const enviarRecibo = async (req, res) => {
+    try {
+        const { paypalOrderId } = req.body;
+        if (!paypalOrderId) {
+            return res.status(400).json({ error: 'paypalOrderId es obligatorio.' });
+        }
+
+        // Obtener la orden verificando que pertenece al usuario del token
+        const [ordenes] = await db.promise().query(
+            `SELECT o.*, u.nombre, u.email
+             FROM ordenes o
+             JOIN usuarios u ON o.id_usuario = u.id_usuario
+             WHERE o.paypal_order_id = ? AND o.id_usuario = ?`,
+            [paypalOrderId, req.usuario.id]
+        );
+        if (!ordenes.length) {
+            return res.status(404).json({ error: 'Orden no encontrada.' });
+        }
+        const orden = ordenes[0];
+
+        // Obtener detalles con graduación alcohólica para calcular IEPS correcto
+        const [detalles] = await db.promise().query(
+            `SELECT od.nombre_producto, od.cantidad, od.precio_unitario, od.subtotal_linea,
+                    p.precio_neto, p.graduacion_alcoholica
+             FROM orden_detalle od
+             LEFT JOIN productos p ON od.id_producto = p.id_producto
+             WHERE od.id_orden = ?`,
+            [orden.id_orden]
+        );
+
+        const subtotal = detalles.reduce(
+            (acc, d) => acc + Number(d.precio_neto || d.precio_unitario) * Number(d.cantidad),
+            0
+        );
+
+        const fecha = new Date().toISOString().slice(0, 19);
+
+        const xmlContent = generarCFDI({
+            folio: orden.folio,
+            fecha,
+            usuario: { nombre: orden.nombre },
+            productos: detalles,
+            subtotal,
+            costoEnvio: Number(orden.costo_envio || 0),
+            total: Number(orden.total),
+        });
+
+        await enviarReciboCFDI({
+            destinatario: orden.email,
+            nombre: orden.nombre,
+            folio: orden.folio,
+            xmlContent,
+            total: orden.total,
+        });
+
+        res.json({ mensaje: 'Recibo enviado correctamente.' });
+    } catch (error) {
+        console.error('Error al enviar recibo:', error);
+        res.status(500).json({ error: 'No se pudo enviar el recibo.', detalle: error.message });
+    }
+};
+
 module.exports = {
     getMisPedidos,
-    getDetallePedido
+    getDetallePedido,
+    enviarRecibo,
 };

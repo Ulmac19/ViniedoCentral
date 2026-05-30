@@ -22,9 +22,9 @@
       </p>
 
       <!-- Mensaje de Error (Aparece solo si hay un error del backend) -->
-      @if (mensajeError) {
+      @if (mensajeError()) {
         <div class="error-msg">
-          <i class="fas fa-exclamation-circle"></i> {{ mensajeError }}
+          <i class="fas fa-exclamation-circle"></i> {{ mensajeError() }}
         </div>
       }
 
@@ -64,8 +64,8 @@
         }
 
         <button type="submit" class="btn-primary"
-          [disabled]="!authForm.form.valid || (!esLogin && !aceptaMayorEdad) || cargando">
-          @if (cargando) { Cargando... } @else if (esLogin) { ENTRAR } @else { REGISTRARSE }
+          [disabled]="!authForm.form.valid || (!esLogin && !aceptaMayorEdad) || cargando()">
+          @if (cargando()) { Cargando... } @else if (esLogin) { ENTRAR } @else { REGISTRARSE }
         </button>
       </form>
 

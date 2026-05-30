@@ -180,6 +180,19 @@
 .dir-ref { color: #777 !important; font-style: italic; }
 .dir-ref i { color: #4A1531; margin-right: 3px; }
 
+.recibo-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.recibo-enviando { background: #f0f4ff; color: #3a5fc8; border: 1px solid #c5d0f5; }
+.recibo-ok { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+
 .direccion-input {
   width: 100%;
   border: 1px solid #d0b0d0;
