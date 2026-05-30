@@ -1,6 +1,5 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Product } from '../../../models/producto.model';
 import { Router, RouterLink } from '@angular/router';
 import { ProductsService } from '../../../services/producto.service';
@@ -13,7 +12,7 @@ import { TERMINOS_Y_CONDICIONES } from '../../../legal/terminos.content';
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [ProductCardComponent, RouterLink, CurrencyPipe, FormsModule],
+  imports: [ProductCardComponent, RouterLink, CurrencyPipe],
   templateUrl: './catalogo.component.html',
   styleUrls: ['./catalogo.component.css'],
 })
@@ -33,16 +32,40 @@ export class CatalogoComponent {
 
   products = signal<Product[]>([]);
   searchTerm = signal<string>('');
+  categoriasActivas = signal<string[]>([]);
+  soloEnStock = signal(false);
+  filtrosAbiertos = signal(false);
 
-  //LOgica por filtrado
-  filteredProducts = computed(() => {
-    const term = this.searchTerm().toLowerCase().trim();
-    if (!term) return this.products();
+  categorias = computed(() =>
+    [...new Set(this.products().map(p => p.category))].sort()
+  );
 
-    return this.products().filter(p => 
-      p.name.toLowerCase().includes(term) || 
-      p.category.toLowerCase().includes(term)
+  toggleCategoria(cat: string) {
+    this.categoriasActivas.update(prev =>
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
     );
+  }
+
+  limpiarFiltros() {
+    this.categoriasActivas.set([]);
+    this.soloEnStock.set(false);
+  }
+
+  get totalFiltrosActivos() {
+    return this.categoriasActivas().length + (this.soloEnStock() ? 1 : 0);
+  }
+
+  filteredProducts = computed(() => {
+    const term  = this.searchTerm().toLowerCase().trim();
+    const cats  = this.categoriasActivas();
+    const stock = this.soloEnStock();
+
+    return this.products().filter(p => {
+      const matchSearch = !term || p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term);
+      const matchCat    = cats.length === 0 || cats.includes(p.category);
+      const matchStock  = !stock || p.inStock;
+      return matchSearch && matchCat && matchStock;
+    });
   });
 
   inStockCount = computed(() => this.products().filter(p => p.inStock).length);
@@ -62,14 +85,18 @@ export class CatalogoComponent {
     this.searchTerm.set(inputElement.value);
   }
 
+  toast = signal('');
+  private toastTimer: any = null;
+
   agregar(eventData: {producto: Product, cantidad: number}) {
     this.carritoService.agregar(eventData.producto, eventData.cantidad);
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toast.set(eventData.producto.name);
+    this.toastTimer = setTimeout(() => this.toast.set(''), 2500);
   }
 
   productoSeleccionado = signal<Product | null>(null);
   sidebarAbierto = signal(false);
-  editandoDireccion = signal(false);
-  nuevaDireccion = signal('');
 
   private router = inject(Router);
 
@@ -93,62 +120,15 @@ export class CatalogoComponent {
   abrirLegal(tipo: 'terminos' | 'privacidad') { this.modalLegal.set(tipo); }
   cerrarLegal() { this.modalLegal.set(null); }
 
-  editandoPerfil = signal(false);
-  perfilNombre = '';
-  perfilEmail = '';
-  perfilPassword = '';
-  perfilConfirmPassword = '';
+  tasaIEPS = computed(() => {
+    const grad = this.productoSeleccionado()?.graduacionAlcoholica ?? 0;
+    if (grad <= 14) return 26.5;
+    if (grad <= 20) return 30;
+    return 53;
+  });
 
-  iniciarEdicionPerfil() {
-    const u = this.authService.usuarioActual();
-    this.perfilNombre = u?.nombre ?? '';
-    this.perfilEmail = u?.email ?? '';
-    this.perfilPassword = '';
-    this.perfilConfirmPassword = '';
-    this.editandoPerfil.set(true);
-  }
-
-  guardarPerfil() {
-    if (!this.perfilNombre.trim() || !this.perfilEmail.trim()) return;
-    if (this.perfilPassword && this.perfilPassword !== this.perfilConfirmPassword) {
-      alert('Las contraseñas no coinciden.');
-      return;
-    }
-    const payload: any = { nombre: this.perfilNombre.trim(), email: this.perfilEmail.trim() };
-    if (this.perfilPassword) payload.password = this.perfilPassword;
-    this.authService.actualizarPerfil(payload).subscribe({
-      next: () => this.editandoPerfil.set(false),
-      error: (err) => alert(err.error?.error ?? 'Error al guardar los datos.')
-    });
-  }
-
-  abrirSidebar() {
-    this.sidebarAbierto.set(true);
-    this.editandoDireccion.set(false);
-    this.editandoPerfil.set(false);
-    this.authService.cargarDireccion().subscribe();
-  }
-  cerrarSidebar() {
-    this.sidebarAbierto.set(false);
-    this.editandoDireccion.set(false);
-    this.editandoPerfil.set(false);
-  }
-
-  iniciarEdicionDireccion() {
-    this.nuevaDireccion.set(this.authService.direccion());
-    this.editandoDireccion.set(true);
-  }
-
-  guardarDireccion() {
-    const dir = this.nuevaDireccion().trim();
-    if (!dir) return;
-    this.authService.actualizarDireccion(dir).subscribe({
-      next: () => this.editandoDireccion.set(false),
-      error: () => alert('Error al guardar la dirección')
-    });
-  }
-
-  get direccionActual() { return this.authService.direccion(); }
+  abrirSidebar() { this.sidebarAbierto.set(true); }
+  cerrarSidebar() { this.sidebarAbierto.set(false); }
 
   logout() {
     this.authService.logout();
@@ -166,4 +146,4 @@ export class CatalogoComponent {
   get inicialUsuario() {
     return this.primerNombre()[0]?.toUpperCase() ?? '?';
   }
-}
+} 

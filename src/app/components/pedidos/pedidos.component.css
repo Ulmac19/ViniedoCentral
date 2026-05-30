@@ -16,6 +16,29 @@
 .main-title { font-size: 32px; font-weight: bold; margin-bottom: 8px; color: #4A1531; }
 .divider { border: 0.5px solid #ccc; margin-bottom: 30px; }
 
+.estado-msg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+.estado-cargando { background: #f0f4ff; color: #3a5fc8; border: 1px solid #c5d0f5; }
+.estado-error { background: #fff0f0; color: #c0392b; border: 1px solid #f5c6c2; }
+.btn-reintentar {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-reintentar:hover { background: #c0392b; color: white; }
+
 /* Estilos de la Tabla */
 .table-container { background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
 .pedidos-table { width: 100%; border-collapse: collapse; text-align: left; }

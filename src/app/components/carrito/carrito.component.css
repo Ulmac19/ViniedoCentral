@@ -150,6 +150,36 @@
 }
 .direccion-btn:hover { background: #4A1531; color: white; }
 
+.dir-select {
+  width: 100%;
+  border: 1px solid #d0b0d0;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 0.85rem;
+  color: #333;
+  background: white;
+  cursor: pointer;
+  margin-bottom: 0.6rem;
+  box-sizing: border-box;
+}
+.dir-select:focus { outline: none; border-color: #4A1531; }
+
+.dir-detalle {
+  background: #f9f4f9;
+  border: 1px solid #e0c8e0;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.dir-detalle p {
+  margin: 0 0 2px;
+  font-size: 0.82rem;
+  color: #444;
+  line-height: 1.4;
+}
+.dir-ref { color: #777 !important; font-style: italic; }
+.dir-ref i { color: #4A1531; margin-right: 3px; }
+
 .direccion-input {
   width: 100%;
   border: 1px solid #d0b0d0;

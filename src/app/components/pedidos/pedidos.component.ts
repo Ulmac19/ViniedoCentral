@@ -6,36 +6,52 @@ import { OrdenesService } from '../../services/ordenes.service';
 @Component({
   selector: 'app-pedidos',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, RouterLink], // DatePipe es vital para formatear las fechas de SQL
+  imports: [CurrencyPipe, DatePipe, RouterLink],
   templateUrl: './pedidos.component.html',
   styleUrls: ['./pedidos.component.css']
 })
 export class PedidosComponent implements OnInit {
   private ordenesService = inject(OrdenesService);
 
-  // Señales reactivas
   pedidos = signal<any[]>([]);
   pedidoSeleccionado = signal<any>(null);
   modalAbierto = signal(false);
+  cargando = signal(true);
+  errorCarga = signal('');
+  cargandoDetalle = signal(false);
 
   ngOnInit() {
     this.cargarPedidos();
   }
 
   cargarPedidos() {
+    this.cargando.set(true);
+    this.errorCarga.set('');
     this.ordenesService.getMisPedidos().subscribe({
-      next: (data) => this.pedidos.set(data),
-      error: (err) => console.error('Error al cargar historial', err)
+      next: (data) => {
+        this.pedidos.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.errorCarga.set('No se pudo cargar el historial de pedidos. Intenta de nuevo.');
+        this.cargando.set(false);
+      }
     });
   }
 
   verDetalle(idOrden: number) {
+    this.cargandoDetalle.set(true);
+    this.errorCarga.set('');
     this.ordenesService.getDetallePedido(idOrden).subscribe({
       next: (data) => {
         this.pedidoSeleccionado.set(data);
-        this.modalAbierto.set(true); // Abrimos la ventana emergente
+        this.modalAbierto.set(true);
+        this.cargandoDetalle.set(false);
       },
-      error: (err) => console.error('Error al cargar detalle', err)
+      error: () => {
+        this.errorCarga.set('No se pudo cargar el detalle del pedido.');
+        this.cargandoDetalle.set(false);
+      }
     });
   }
 

@@ -1,8 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { InventarioService } from '../../services/inventario.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-inventario',
@@ -13,11 +14,25 @@ import { InventarioService } from '../../services/inventario.service';
 })
 export class InventarioComponent implements OnInit {
   private inventarioService = inject(InventarioService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   productos = signal<any[]>([]);
   modalAbierto = signal(false);
   modoEdicion = signal(false);
   mensaje = signal('');
+  tipoMensaje = signal<'ok' | 'error'>('ok');
+
+  private mostrarMensaje(texto: string, tipo: 'ok' | 'error') {
+    this.mensaje.set(texto);
+    this.tipoMensaje.set(tipo);
+    setTimeout(() => this.mensaje.set(''), 3500);
+  }
 
   formulario = signal({
     id_producto: 0, sku: '', nombre: '', categoria: '',
@@ -32,7 +47,7 @@ export class InventarioComponent implements OnInit {
   cargarProductos() {
     this.inventarioService.getProductos().subscribe({
       next: (data) => this.productos.set(data),
-      error: () => this.mensaje.set('Error al cargar productos')
+      error: () => this.mostrarMensaje('Error al cargar productos.', 'error')
     });
   }
 
@@ -68,13 +83,21 @@ export class InventarioComponent implements OnInit {
 
     if (this.modoEdicion()) {
       this.inventarioService.actualizarProducto(f.id_producto, datos).subscribe({
-        next: () => { this.cargarProductos(); this.cerrarModal(); },
-        error: () => this.mensaje.set('Error al actualizar producto')
+        next: () => {
+          this.cargarProductos();
+          this.cerrarModal();
+          this.mostrarMensaje('Producto actualizado correctamente.', 'ok');
+        },
+        error: () => this.mostrarMensaje('Error al actualizar producto.', 'error')
       });
     } else {
       this.inventarioService.crearProducto(datos).subscribe({
-        next: () => { this.cargarProductos(); this.cerrarModal(); },
-        error: () => this.mensaje.set('Error al crear producto')
+        next: () => {
+          this.cargarProductos();
+          this.cerrarModal();
+          this.mostrarMensaje('Producto creado correctamente.', 'ok');
+        },
+        error: () => this.mostrarMensaje('Error al crear producto.', 'error')
       });
     }
   }
@@ -82,8 +105,11 @@ export class InventarioComponent implements OnInit {
   eliminar(id: number) {
     if (!confirm('¿Desactivar este producto?')) return;
     this.inventarioService.eliminarProducto(id).subscribe({
-      next: () => this.cargarProductos(),
-      error: () => this.mensaje.set('Error al eliminar producto')
+      next: () => {
+        this.cargarProductos();
+        this.mostrarMensaje('Producto desactivado.', 'ok');
+      },
+      error: () => this.mostrarMensaje('Error al desactivar producto.', 'error')
     });
   }
 
@@ -92,8 +118,11 @@ export class InventarioComponent implements OnInit {
     const accion = nuevoEstado ? '¿Reactivar este producto?' : '¿Desactivar este producto?';
     if (!confirm(accion)) return;
     this.inventarioService.toggleActivo(producto.id_producto, nuevoEstado).subscribe({
-      next: () => this.cargarProductos(),
-      error: () => this.mensaje.set('Error al cambiar estado del producto')
+      next: () => {
+        this.cargarProductos();
+        this.mostrarMensaje(nuevoEstado ? 'Producto reactivado.' : 'Producto desactivado.', 'ok');
+      },
+      error: () => this.mostrarMensaje('Error al cambiar estado del producto.', 'error')
     });
   }
 

@@ -39,11 +39,20 @@
   margin-top: 1.5rem;
 }
 
-.btn-volver {
-  color: #4a1942;
-  text-decoration: none;
+.btn-logout {
+  background: none;
+  border: 1px solid #4A1531;
+  color: #4A1531;
+  padding: 7px 16px;
+  border-radius: 6px;
   font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 0.2s, color 0.2s;
 }
+.btn-logout:hover { background: #4A1531; color: white; }
 
 .tabla-wrapper {
   overflow-x: auto;
@@ -102,7 +111,21 @@
 .btn-activar { background: #27ae60; color: white; }
 .btn-activar:hover { background: #1e8449; }
 
-.mensaje-error {
+.mensaje-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.7rem 1rem;
+  border-radius: 7px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  font-weight: 500;
+}
+.mensaje-ok    { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+.mensaje-error { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c2; }
+
+/* kept for backward compat */
+.mensaje-error-legacy {
   background: #fde8e8;
   color: #c0392b;
   padding: 0.6rem 1rem;

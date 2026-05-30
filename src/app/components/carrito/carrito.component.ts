@@ -1,11 +1,12 @@
-import { 
-  Component, 
-  inject, 
-  AfterViewInit, 
-  ElementRef, 
-  PLATFORM_ID, 
-  ViewChild, 
-  signal 
+import {
+  Component,
+  inject,
+  AfterViewInit,
+  ElementRef,
+  PLATFORM_ID,
+  ViewChild,
+  signal,
+  computed
 } from '@angular/core';
 import { isPlatformBrowser, CurrencyPipe, JsonPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -13,13 +14,12 @@ import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CarritoService } from '../../services/carrito.service';
 import { PaypalService } from '../../services/paypal.service';
-import { AuthService } from '../../services/auth.service';
-import { FormsModule } from '@angular/forms';
+import { DireccionesService, Direccion } from '../../services/direcciones.service';
 
 @Component({
   selector: 'app-carrito',
   standalone: true,
-  imports: [CurrencyPipe, JsonPipe, RouterLink, FormsModule],
+  imports: [CurrencyPipe, JsonPipe, RouterLink],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
@@ -30,10 +30,10 @@ export class CarritoComponent implements AfterViewInit {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly paypalApi = inject(PaypalService);
-  readonly authService = inject(AuthService);
+  private readonly direccionesService = inject(DireccionesService);
 
   // Propiedades del carrito
-  productos = this.carritoService.productos; 
+  productos = this.carritoService.productos;
   subtotal = this.carritoService.subtotal;
   costoEnvio = this.carritoService.costoEnvio;
   total = this.carritoService.total;
@@ -43,28 +43,26 @@ export class CarritoComponent implements AfterViewInit {
   readonly cargandoSdk = signal(true);
   readonly errorMsg = signal<string | null>(null);
 
-  // Dirección de entrega
-  readonly editandoDireccion = signal(false);
-  nuevaDireccion = '';
+  // Direcciones de entrega
+  readonly direcciones = signal<Direccion[]>([]);
+  readonly idSeleccionada = signal<number | null>(null);
+  readonly direccionSeleccionada = computed(() =>
+    this.direcciones().find(d => d.id_direccion === this.idSeleccionada()) ?? null
+  );
 
-  get direccion() { return this.authService.direccion(); }
-
-  iniciarEdicionDireccion() {
-    this.nuevaDireccion = this.authService.direccion();
-    this.editandoDireccion.set(true);
-  }
-
-  guardarDireccion() {
-    if (!this.nuevaDireccion.trim()) return;
-    this.authService.actualizarDireccion(this.nuevaDireccion.trim()).subscribe({
-      next: () => this.editandoDireccion.set(false),
-      error: () => alert('Error al guardar la dirección')
-    });
+  seleccionarDireccion(event: Event) {
+    const id = Number((event.target as HTMLSelectElement).value);
+    this.idSeleccionada.set(id);
   }
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.authService.cargarDireccion().subscribe();
+    this.direccionesService.getDirecciones().subscribe({
+      next: (dirs) => {
+        this.direcciones.set(dirs);
+        if (dirs.length > 0) this.idSeleccionada.set(dirs[0].id_direccion!);
+      }
+    });
     if (this.productos().length > 0) {
       void this.inicializarPaypal();
     } else {

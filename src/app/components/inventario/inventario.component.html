@@ -2,12 +2,17 @@
   <div class="inventario-header">
     <h1>Inventario de Productos</h1>
     <div class="header-acciones">
-      <a routerLink="/catalogo" class="btn-volver">← Volver al catálogo</a>
+      <button class="btn-logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+      </button>
     </div>
   </div>
 
   @if (mensaje()) {
-    <div class="mensaje-error">{{ mensaje() }}</div>
+    <div class="mensaje-banner" [class.mensaje-ok]="tipoMensaje() === 'ok'" [class.mensaje-error]="tipoMensaje() === 'error'">
+      <i class="fas" [class.fa-check-circle]="tipoMensaje() === 'ok'" [class.fa-exclamation-circle]="tipoMensaje() === 'error'"></i>
+      {{ mensaje() }}
+    </div>
   }
 
   <div class="tabla-wrapper">

@@ -86,7 +86,7 @@ const iniciarSesion = async (req, res) => {
 const obtenerPerfil = async (req, res) => {
     try {
         const [rows] = await db.promise().query(
-            'SELECT id_usuario, nombre, email, rol, direccion_entrega FROM usuarios WHERE id_usuario = ?',
+            'SELECT id_usuario, nombre, email, rol FROM usuarios WHERE id_usuario = ?',
             [req.usuario.id]
         );
         if (!rows.length) return res.status(404).json({ error: 'Usuario no encontrado.' });
@@ -128,20 +128,27 @@ const actualizarPerfil = async (req, res) => {
     }
 };
 
-const actualizarDireccion = async (req, res) => {
+const eliminarCuenta = async (req, res) => {
     try {
-        const { direccion_entrega } = req.body;
-        if (!direccion_entrega || !direccion_entrega.trim()) {
-            return res.status(400).json({ error: 'La dirección no puede estar vacía.' });
+        const { password } = req.body;
+        if (!password) {
+            return res.status(400).json({ error: 'Se requiere la contraseña para confirmar.' });
         }
-        await db.promise().query(
-            'UPDATE usuarios SET direccion_entrega = ? WHERE id_usuario = ?',
-            [direccion_entrega.trim(), req.usuario.id]
+        const [users] = await db.promise().query(
+            'SELECT password_hash FROM usuarios WHERE id_usuario = ?',
+            [req.usuario.id]
         );
-        res.json({ mensaje: 'Dirección actualizada correctamente.' });
+        if (!users.length) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+        const match = await bcrypt.compare(password, users[0].password_hash);
+        if (!match) return res.status(401).json({ error: 'Contraseña incorrecta.' });
+
+        await db.promise().query('DELETE FROM usuarios WHERE id_usuario = ?', [req.usuario.id]);
+        res.json({ mensaje: 'Cuenta eliminada correctamente.' });
     } catch (error) {
+        console.error('Error eliminando cuenta:', error);
         res.status(500).json({ error: 'Error interno del servidor.' });
     }
 };
 
-module.exports = { registrarUsuario, iniciarSesion, obtenerPerfil, actualizarPerfil, actualizarDireccion };
+module.exports = { registrarUsuario, iniciarSesion, obtenerPerfil, actualizarPerfil, eliminarCuenta };

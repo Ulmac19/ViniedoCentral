@@ -1,0 +1,349 @@
+<header class="navbar">
+  <div class="brand">
+    <img src="assets/logo-vitis.png" alt="Vitis & Byte" class="logo">
+    <span class="nav-titulo">MI PERFIL</span>
+  </div>
+  <button class="btn-volver" routerLink="/catalogo">
+    <i class="fas fa-chevron-left"></i> Volver al catálogo
+  </button>
+</header>
+
+<div class="container">
+
+  <!-- Cabecera de perfil -->
+  <div class="perfil-header">
+    <div class="avatar">{{ iniciales() }}</div>
+    <div class="perfil-info">
+      <h1 class="perfil-nombre">{{ authService.usuarioActual()?.nombre }}</h1>
+      <p class="perfil-email"><i class="fas fa-envelope"></i> {{ authService.usuarioActual()?.email }}</p>
+    </div>
+  </div>
+
+  <div class="perfil-layout">
+
+    <!-- Columna izquierda: Datos de la cuenta -->
+    <div class="card">
+      <h2 class="card-titulo"><i class="fas fa-user"></i> Datos de la cuenta</h2>
+
+      @if (mensajePerfil()) {
+        <div class="alert alert-ok"><i class="fas fa-check-circle"></i> {{ mensajePerfil() }}</div>
+      }
+      @if (errorPerfil()) {
+        <div class="alert alert-error"><i class="fas fa-times-circle"></i> {{ errorPerfil() }}</div>
+      }
+
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input type="text" class="form-input"
+          placeholder="Tu nombre completo"
+          maxlength="100"
+          [(ngModel)]="nombreDraft">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-input"
+          placeholder="tu@email.com"
+          [(ngModel)]="emailDraft">
+      </div>
+
+      <button class="btn-primary" (click)="guardarPerfil()" [disabled]="!hayCambios || guardandoPerfil()">
+        @if (guardandoPerfil()) {
+          <i class="fas fa-spinner fa-spin"></i> Guardando...
+        } @else {
+          <i class="fas fa-save"></i> Guardar cambios
+        }
+      </button>
+
+      <hr class="separator">
+
+      <div class="zona-peligro">
+        <h3 class="zona-peligro-titulo">
+          <i class="fas fa-exclamation-triangle"></i> Zona de peligro
+        </h3>
+        <p class="zona-peligro-desc">
+          Al eliminar tu cuenta se borrarán permanentemente tu información personal,
+          historial de pedidos y todas tus direcciones. Esta acción es irreversible.
+        </p>
+        <button class="btn-danger" (click)="abrirModalEliminar()">
+          <i class="fas fa-user-times"></i> Eliminar mi cuenta
+        </button>
+      </div>
+    </div>
+
+    <!-- Columna derecha: Direcciones -->
+    <div class="card">
+      <div class="card-header-row">
+        <h2 class="card-titulo"><i class="fas fa-map-marker-alt"></i> Mis direcciones</h2>
+        <span class="contador" [class.contador-lleno]="maxDirecciones">
+          {{ direcciones().length }}/4
+        </span>
+      </div>
+
+      @if (mensajeDireccion()) {
+        <div class="alert alert-ok"><i class="fas fa-check-circle"></i> {{ mensajeDireccion() }}</div>
+      }
+
+      @if (direcciones().length === 0) {
+        <p class="sin-items">No tienes direcciones guardadas aún.</p>
+      }
+
+      <div class="dir-grid">
+        @for (dir of direcciones(); track dir.id_direccion) {
+          <div class="dir-card">
+            <div class="dir-alias-badge">{{ dir.alias }}</div>
+            <p class="dir-linea dir-calle">
+              {{ dir.calle }} {{ dir.numero_exterior }}
+              @if (dir.numero_interior) { Int. {{ dir.numero_interior }} }
+            </p>
+            <p class="dir-linea">Col. {{ dir.colonia }}</p>
+            <p class="dir-linea">{{ dir.municipio }}, {{ dir.ciudad }}</p>
+            <p class="dir-linea">{{ dir.estado }} &mdash; C.P. {{ dir.codigo_postal }}</p>
+            @if (dir.referencias) {
+              <p class="dir-referencias"><i class="fas fa-info-circle"></i> {{ dir.referencias }}</p>
+            }
+            <div class="dir-acciones">
+              <button class="btn-icon btn-edit-icon" (click)="abrirModalEditar(dir)" title="Editar">
+                <i class="fas fa-pen"></i> Editar
+              </button>
+              <button class="btn-icon btn-delete-icon" (click)="eliminarDireccion(dir)" title="Eliminar">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button class="btn-primary btn-add-dir" (click)="abrirModalNueva()" [disabled]="maxDirecciones">
+        @if (maxDirecciones) {
+          <i class="fas fa-lock"></i> Límite alcanzado (4/4)
+        } @else {
+          <i class="fas fa-plus"></i> Agregar dirección
+        }
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ===== MODAL: Dirección (crear / editar) ===== -->
+@if (modalDireccionAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModalDireccion()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3>{{ modoEdicion() ? 'Editar dirección' : 'Nueva dirección' }}</h3>
+        <button class="modal-close" (click)="cerrarModalDireccion()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      @if (errorModalDireccion()) {
+        <div class="alert alert-error"><i class="fas fa-times-circle"></i> {{ errorModalDireccion() }}</div>
+      }
+
+      <div class="modal-form">
+
+        <div class="form-group">
+          <label class="form-label">Alias <span class="req">*</span></label>
+          <input type="text" class="form-input" placeholder="Ej. Casa, Trabajo" maxlength="50"
+            [ngModel]="formulario().alias" (ngModelChange)="setCampo('alias', $event)">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group fg-2">
+            <label class="form-label">Calle <span class="req">*</span></label>
+            <input type="text" class="form-input" placeholder="Nombre de la calle" maxlength="150"
+              [ngModel]="formulario().calle" (ngModelChange)="setCampo('calle', $event)">
+          </div>
+          <div class="form-group fg-1">
+            <label class="form-label">Núm. Ext. <span class="req">*</span></label>
+            <input type="text" class="form-input" placeholder="123" maxlength="20"
+              pattern="[A-Za-z0-9\-#\/]+"
+              [ngModel]="formulario().numero_exterior" (ngModelChange)="setCampo('numero_exterior', $event)">
+          </div>
+          <div class="form-group fg-1">
+            <label class="form-label">Núm. Int.</label>
+            <input type="text" class="form-input" placeholder="Opcional" maxlength="20"
+              pattern="[A-Za-z0-9\-#\/]*"
+              [ngModel]="formulario().numero_interior" (ngModelChange)="setCampo('numero_interior', $event)">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group fg-1">
+            <label class="form-label">Colonia <span class="req">*</span></label>
+            <input type="text" class="form-input" placeholder="Colonia" maxlength="100"
+              [ngModel]="formulario().colonia" (ngModelChange)="setCampo('colonia', $event)">
+          </div>
+          <div class="form-group fg-1">
+            <label class="form-label">Municipio / Alcaldía <span class="req">*</span></label>
+            <input type="text" class="form-input" placeholder="Municipio" maxlength="100"
+              [ngModel]="formulario().municipio" (ngModelChange)="setCampo('municipio', $event)">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group fg-1">
+            <label class="form-label">Ciudad <span class="req">*</span></label>
+            <input type="text" class="form-input" placeholder="Ciudad" maxlength="100"
+              [ngModel]="formulario().ciudad" (ngModelChange)="setCampo('ciudad', $event)">
+          </div>
+          <div class="form-group fg-1">
+            <label class="form-label">Estado <span class="req">*</span></label>
+            <select class="form-input"
+              [ngModel]="formulario().estado" (ngModelChange)="setCampo('estado', $event)">
+              <option value="">Selecciona un estado</option>
+              @for (est of ESTADOS_MX; track est) {
+                <option [value]="est">{{ est }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group fg-1">
+            <label class="form-label">Código Postal <span class="req">*</span></label>
+            <input type="text" class="form-input" placeholder="00000"
+              maxlength="5" minlength="5" pattern="\d{5}"
+              inputmode="numeric"
+              [ngModel]="formulario().codigo_postal" (ngModelChange)="setCampo('codigo_postal', $event)">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Referencias adicionales</label>
+          <input type="text" class="form-input"
+            placeholder="Ej. Casa de cantera, portón café" maxlength="255"
+            [ngModel]="formulario().referencias" (ngModelChange)="setCampo('referencias', $event)">
+        </div>
+
+        <p class="form-nota"><span class="req">*</span> Campos obligatorios</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModalDireccion()">Cancelar</button>
+        <button class="btn-primary" (click)="guardarDireccion()">
+          {{ modoEdicion() ? 'Actualizar' : 'Guardar dirección' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+
+<!-- ===== MODAL: Confirmar eliminar dirección ===== -->
+@if (modalConfirmDir()) {
+  <div class="modal-overlay" (click)="cancelarEliminarDir()">
+    <div class="modal-box modal-sm" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3><i class="fas fa-map-marker-alt"></i> Eliminar dirección</h3>
+        <button class="modal-close" (click)="cancelarEliminarDir()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>¿Deseas eliminar la dirección <strong>"{{ dirAEliminar()?.alias }}"</strong>?</p>
+        @if (dirAEliminar(); as dir) {
+          <p class="dir-preview">
+            {{ dir.calle }} {{ dir.numero_exterior }},
+            Col. {{ dir.colonia }}, {{ dir.municipio }},
+            {{ dir.ciudad }}, {{ dir.estado }}
+          </p>
+        }
+        <p class="advertencia-final">Esta acción no se puede deshacer.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cancelarEliminarDir()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmarEliminarDir()">
+          <i class="fas fa-trash"></i> Sí, eliminar
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+
+<!-- ===== MODAL: Eliminar cuenta — Paso 1 (advertencia) ===== -->
+@if (modalEliminar1()) {
+  <div class="modal-overlay" (click)="cerrarModalEliminar1()">
+    <div class="modal-box modal-peligro" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3><i class="fas fa-exclamation-triangle"></i> ¿Eliminar tu cuenta?</h3>
+        <button class="modal-close" (click)="cerrarModalEliminar1()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>Esta acción es <strong>permanente e irreversible</strong>. Se eliminarán:</p>
+        <ul class="lista-eliminacion">
+          <li><i class="fas fa-user"></i> Tu información personal (nombre y correo)</li>
+          <li><i class="fas fa-clipboard-list"></i> Todo tu historial de pedidos</li>
+          <li><i class="fas fa-map-marker-alt"></i> Todas tus direcciones guardadas</li>
+        </ul>
+        <p class="advertencia-final">¿Estás completamente seguro de que deseas continuar?</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModalEliminar1()">
+          <i class="fas fa-arrow-left"></i> Conservar mi cuenta
+        </button>
+        <button class="btn-danger" (click)="confirmarPaso1()">
+          Sí, continuar <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+
+<!-- ===== MODAL: Eliminar cuenta — Paso 2 (confirmar contraseña) ===== -->
+@if (modalEliminar2()) {
+  <div class="modal-overlay" (click)="cerrarModalEliminar2()">
+    <div class="modal-box modal-peligro" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3><i class="fas fa-lock"></i> Confirma tu contraseña</h3>
+        <button class="modal-close" (click)="cerrarModalEliminar2()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>Para eliminar definitivamente tu cuenta, ingresa tu contraseña actual:</p>
+
+        @if (errorEliminar()) {
+          <div class="alert alert-error"><i class="fas fa-times-circle"></i> {{ errorEliminar() }}</div>
+        }
+
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-input"
+            placeholder="Ingresa tu contraseña"
+            [(ngModel)]="passwordConfirmacion"
+            (keyup.enter)="confirmarEliminarCuenta()">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModalEliminar2()" [disabled]="eliminando()">
+          Cancelar
+        </button>
+        <button class="btn-danger" (click)="confirmarEliminarCuenta()" [disabled]="eliminando()">
+          @if (eliminando()) {
+            <i class="fas fa-spinner fa-spin"></i> Eliminando...
+          } @else {
+            <i class="fas fa-trash"></i> Eliminar definitivamente
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

@@ -34,7 +34,6 @@ export class AuthService {
   // Señales públicas: cualquier componente puede leerlas sin subscribe()
   usuarioActual = signal<any>(null);
   token = signal<string | null>(null);
-  direccion = signal<string>('');
 
   constructor() {
     // Rehidrata la sesión al arrancar; así el guard no ve token=null en el primer ciclo
@@ -59,12 +58,6 @@ export class AuthService {
     return { Authorization: `Bearer ${this.token()}` };
   }
 
-  cargarDireccion() {
-    return this.http.get<any>(`${this.apiUrl}/perfil`, { headers: this.authHeaders() }).pipe(
-      tap(perfil => this.direccion.set(perfil.direccion_entrega ?? ''))
-    );
-  }
-
   actualizarPerfil(datos: { nombre: string; email: string; password?: string }) {
     return this.http.put<any>(`${this.apiUrl}/perfil`, datos, { headers: this.authHeaders() }).pipe(
       tap(respuesta => {
@@ -77,17 +70,17 @@ export class AuthService {
     );
   }
 
-  actualizarDireccion(direccion_entrega: string) {
-    return this.http.put<any>(`${this.apiUrl}/direccion`, { direccion_entrega }, { headers: this.authHeaders() }).pipe(
-      tap(() => this.direccion.set(direccion_entrega))
-    );
+  eliminarCuenta(password: string) {
+    return this.http.delete<any>(`${this.apiUrl}/cuenta`, {
+      headers: this.authHeaders(),
+      body: { password }
+    });
   }
 
   /** Destruye la sesión local. No llama al backend porque los JWT son stateless. */
   logout() {
     this.usuarioActual.set(null);
     this.token.set(null);
-    this.direccion.set('');
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token_vitis');
       localStorage.removeItem('user_vitis');

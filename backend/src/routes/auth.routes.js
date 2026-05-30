@@ -7,6 +7,6 @@ router.post('/registro', authController.registrarUsuario);
 router.post('/login', authController.iniciarSesion);
 router.get('/perfil', verificarToken, authController.obtenerPerfil);
 router.put('/perfil', verificarToken, authController.actualizarPerfil);
-router.put('/direccion', verificarToken, authController.actualizarDireccion);
+router.delete('/cuenta', verificarToken, authController.eliminarCuenta);
 
 module.exports = router;

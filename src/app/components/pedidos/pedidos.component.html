@@ -16,7 +16,16 @@
   <h1 class="main-title">Mi Historial</h1>
   <hr class="divider">
 
-  @if (pedidos().length === 0) {
+  @if (errorCarga()) {
+    <div class="estado-msg estado-error">
+      <i class="fas fa-exclamation-circle"></i> {{ errorCarga() }}
+      <button class="btn-reintentar" (click)="cargarPedidos()">Reintentar</button>
+    </div>
+  } @else if (cargando()) {
+    <div class="estado-msg estado-cargando">
+      <i class="fas fa-spinner fa-spin"></i> Cargando tus pedidos...
+    </div>
+  } @else if (pedidos().length === 0) {
     <div class="empty-msg">
       <p>Aún no tienes pedidos registrados.</p>
       <button class="btn-primary" routerLink="/catalogo">Ir a comprar</button>
@@ -47,8 +56,12 @@
               </td>
               <td class="direccion-celda">{{ pedido.direccion_entrega || '—' }}</td>
               <td>
-                <button class="btn-outline" (click)="verDetalle(pedido.id_orden)">
-                  Ver detalle
+                <button class="btn-outline" (click)="verDetalle(pedido.id_orden)" [disabled]="cargandoDetalle()">
+                  @if (cargandoDetalle()) {
+                    <i class="fas fa-spinner fa-spin"></i>
+                  } @else {
+                    Ver detalle
+                  }
                 </button>
               </td>
             </tr>

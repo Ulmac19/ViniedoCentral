@@ -34,51 +34,18 @@
     </button>
 
     <div class="sidebar-perfil">
-      @if (!editandoPerfil()) {
-        <div class="sidebar-avatar">{{ inicialUsuario }}</div>
-        <p class="sidebar-nombre">{{ primerNombre() }}</p>
-        <p class="sidebar-email">{{ emailUsuario }}</p>
-        @if (esAdmin) {
-          <span class="sidebar-rol">Administrador</span>
-        }
-        <button class="perfil-btn-editar" (click)="iniciarEdicionPerfil()">
-          <i class="fas fa-pen"></i> Editar perfil
-        </button>
-      } @else {
-        <p class="sidebar-seccion-titulo"><i class="fas fa-user-edit"></i> Editar perfil</p>
-        <div class="perfil-form">
-          <input class="perfil-input" [(ngModel)]="perfilNombre" placeholder="Nombre completo" type="text">
-          <input class="perfil-input" [(ngModel)]="perfilEmail" placeholder="Correo electrónico" type="email">
-          <input class="perfil-input" [(ngModel)]="perfilPassword" placeholder="Nueva contraseña (opcional)" type="password">
-          @if (perfilPassword) {
-            <input class="perfil-input" [(ngModel)]="perfilConfirmPassword" placeholder="Confirmar contraseña" type="password">
-          }
-          <div class="dir-acciones">
-            <button class="dir-btn-guardar" (click)="guardarPerfil()">Guardar</button>
-            <button class="dir-btn-cancelar" (click)="editandoPerfil.set(false)">Cancelar</button>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Dirección de entrega -->
-    <div class="sidebar-direccion">
-      <p class="sidebar-seccion-titulo"><i class="fas fa-map-marker-alt"></i> Dirección de entrega</p>
-      @if (!editandoDireccion()) {
-        <p class="dir-texto">{{ direccionActual || 'Sin dirección registrada' }}</p>
-        <button class="dir-btn-editar" (click)="iniciarEdicionDireccion()">
-          {{ direccionActual ? 'Cambiar' : 'Agregar dirección' }}
-        </button>
-      } @else {
-        <textarea class="dir-input" [(ngModel)]="nuevaDireccion" placeholder="Calle, número, colonia, ciudad..." rows="3"></textarea>
-        <div class="dir-acciones">
-          <button class="dir-btn-guardar" (click)="guardarDireccion()">Guardar</button>
-          <button class="dir-btn-cancelar" (click)="editandoDireccion.set(false)">Cancelar</button>
-        </div>
+      <div class="sidebar-avatar">{{ inicialUsuario }}</div>
+      <p class="sidebar-nombre">{{ primerNombre() }}</p>
+      <p class="sidebar-email">{{ emailUsuario }}</p>
+      @if (esAdmin) {
+        <span class="sidebar-rol">Administrador</span>
       }
     </div>
 
     <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/perfil" (click)="cerrarSidebar()">
+        <i class="fas fa-user-cog"></i> Mi Perfil
+      </a>
       <a class="sidebar-link" routerLink="/pedidos" (click)="cerrarSidebar()">
         <i class="fas fa-clipboard-list"></i> Mis Pedidos
       </a>
@@ -94,6 +61,46 @@
     </button>
   </aside>
 }
+
+<div class="filtros-bar">
+  <button class="btn-filtros" (click)="filtrosAbiertos.set(!filtrosAbiertos())">
+    <i class="fas fa-sliders-h"></i> Filtros
+    @if (totalFiltrosActivos > 0) {
+      <span class="filtros-badge">{{ totalFiltrosActivos }}</span>
+    }
+    <i class="fas" [class.fa-chevron-down]="!filtrosAbiertos()" [class.fa-chevron-up]="filtrosAbiertos()"></i>
+  </button>
+
+  @if (filtrosAbiertos()) {
+    <div class="filtros-panel">
+      <div class="filtros-categorias">
+        @for (cat of categorias(); track cat) {
+          <button
+            class="filtro-pill"
+            [class.activo]="categoriasActivas().includes(cat)"
+            (click)="toggleCategoria(cat)">
+            {{ cat }}
+          </button>
+        }
+      </div>
+
+      <div class="filtros-extra">
+        <button
+          class="filtro-stock"
+          [class.activo]="soloEnStock()"
+          (click)="soloEnStock.set(!soloEnStock())">
+          <i class="fas fa-check-circle"></i> Solo disponibles
+        </button>
+
+        @if (totalFiltrosActivos > 0) {
+          <button class="filtro-limpiar" (click)="limpiarFiltros()">
+            <i class="fas fa-times"></i> Limpiar filtros
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>
 
 <section class="grid">
   @for (p of filteredProducts(); track p.id) {
@@ -151,11 +158,19 @@
         </div>
 
         <div class="modal-nota-fiscal">
-          <i class="fas fa-receipt"></i> Precio incluye IEPS 53% + IVA 16%
+          <i class="fas fa-receipt"></i> Precio incluye IEPS {{ tasaIEPS() }}% + IVA 16%
         </div>
       </div>
 
     </div>
+  </div>
+}
+
+<!-- Toast: producto agregado al carrito -->
+@if (toast()) {
+  <div class="toast-carrito">
+    <i class="fas fa-check-circle"></i>
+    <span><strong>{{ toast() }}</strong> agregado al carrito</span>
   </div>
 }
 
