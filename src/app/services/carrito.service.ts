@@ -21,18 +21,20 @@ export class CarritoService {
 
   agregar(producto: Product, cantidadAgregada: number) {
     this.productosSignal.update(lista => {
-      // Revisamos si el producto ya existe en el carrito 
       const existe = lista.find(p => p.id === producto.id);
+      const enCarrito = existe?.cantidad ?? 0;
+      const disponible = producto.stock - enCarrito;
+
+      if (disponible <= 0) return lista;
+
+      const agregar = Math.min(cantidadAgregada, disponible);
 
       if (existe) {
-        // Si existe, solo aumentamos su cantidad
         return lista.map(p =>
-          p.id === producto.id ? { ...p, cantidad: p.cantidad + cantidadAgregada } : p
+          p.id === producto.id ? { ...p, cantidad: p.cantidad + agregar } : p
         );
       }
-
-      // Si es nuevo, lo agregamos con cantidad inicial de 1
-      return [...lista, { ...producto, cantidad: cantidadAgregada }];
+      return [...lista, { ...producto, cantidad: agregar }];
     });
   }
 

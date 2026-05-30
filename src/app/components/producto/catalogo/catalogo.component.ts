@@ -86,12 +86,33 @@ export class CatalogoComponent {
   }
 
   toast = signal('');
+  aviso = signal('');
   private toastTimer: any = null;
+  private avisoTimer: any = null;
 
   agregar(eventData: {producto: Product, cantidad: number}) {
-    this.carritoService.agregar(eventData.producto, eventData.cantidad);
+    const { producto, cantidad } = eventData;
+    const enCarrito = this.carritoService.productos().find(p => p.id === producto.id)?.cantidad ?? 0;
+    const disponible = producto.stock - enCarrito;
+
     if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toast.set(eventData.producto.name);
+    if (this.avisoTimer) clearTimeout(this.avisoTimer);
+
+    if (disponible <= 0) {
+      this.aviso.set(`Ya tienes el máximo disponible de "${producto.name}" en tu carrito (${producto.stock} u.).`);
+      this.avisoTimer = setTimeout(() => this.aviso.set(''), 3500);
+      return;
+    }
+
+    if (cantidad > disponible) {
+      this.carritoService.agregar(producto, disponible);
+      this.aviso.set(`Solo se agregaron ${disponible} de "${producto.name}" — es todo el stock disponible.`);
+      this.avisoTimer = setTimeout(() => this.aviso.set(''), 3500);
+      return;
+    }
+
+    this.carritoService.agregar(producto, cantidad);
+    this.toast.set(producto.name);
     this.toastTimer = setTimeout(() => this.toast.set(''), 2500);
   }
 

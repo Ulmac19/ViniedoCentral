@@ -82,13 +82,15 @@ export class CarritoComponent implements AfterViewInit {
     this.carritoService.exportarXML(); 
   }
 
-  cambiarCantidad(id: number, event: Event) {
+  cambiarCantidad(id: number, stock: number, event: Event) {
     const input = event.target as HTMLInputElement;
-    const valor = Number(input.value); 
-    
-    if (valor > 0) {
-      this.carritoService.actualizarCantidad(id, valor);
-    }
+    let valor = Number(input.value);
+
+    if (valor < 1) valor = 1;
+    if (valor > stock) valor = stock;
+
+    input.value = String(valor);
+    this.carritoService.actualizarCantidad(id, valor);
   }
 
   // --- LÓGICA DE PAYPAL IMPORTADA DESDE CHECKOUT ---

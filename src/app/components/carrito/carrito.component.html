@@ -25,8 +25,9 @@
         <div class="controls">
           <div class="qty-wrapper">
             <label>Cantidad</label>
-            <input type="number" [value]="item.cantidad" min="1" (change)="cambiarCantidad(item.id, $event)"
-              (input)="cambiarCantidad(item.id, $event)">
+            <input type="number" [value]="item.cantidad" min="1" [max]="item.stock"
+              (change)="cambiarCantidad(item.id, item.stock, $event)"
+              (input)="cambiarCantidad(item.id, item.stock, $event)">
           </div>
           <span class="subtotal-item">{{ item.price | currency:'MXN' }}</span>
         </div>

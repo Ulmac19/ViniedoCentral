@@ -105,5 +105,17 @@
 }
 
 .add-btn:hover {
-  background-color: #2e0d1e; /* Un tono vino más oscuro al pasar el mouse */
+  background-color: #2e0d1e;
+}
+
+.agotado-badge {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #c0392b;
+  background: #fdf0f0;
 }

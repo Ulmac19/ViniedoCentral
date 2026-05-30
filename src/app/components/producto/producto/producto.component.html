@@ -8,10 +8,14 @@
     <span class="price">{{ product.price | currency:'MXN' }}</span>
 
     <div class="card-add-controls" (click)="$event.stopPropagation()">
-      <input type="number" class="qty-input" min="1" value="1" #cantidadInput>
-      <button class="add-btn" (click)="onAdd(cantidadInput.value)">
-        <i class="fas fa-cart-plus"></i> Añadir
-      </button>
+      @if (product.inStock) {
+        <input type="number" class="qty-input" min="1" [max]="product.stock" value="1" #cantidadInput>
+        <button class="add-btn" (click)="onAdd(cantidadInput.value)">
+          <i class="fas fa-cart-plus"></i> Añadir
+        </button>
+      } @else {
+        <span class="agotado-badge"><i class="fas fa-times-circle"></i> Agotado</span>
+      }
     </div>
   </div>
 </article>

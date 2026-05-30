@@ -160,6 +160,7 @@
         <div class="modal-nota-fiscal">
           <i class="fas fa-receipt"></i> Precio incluye IEPS {{ tasaIEPS() }}% + IVA 16%
         </div>
+
       </div>
 
     </div>
@@ -171,6 +172,14 @@
   <div class="toast-carrito">
     <i class="fas fa-check-circle"></i>
     <span><strong>{{ toast() }}</strong> agregado al carrito</span>
+  </div>
+}
+
+<!-- Toast: aviso de stock insuficiente -->
+@if (aviso()) {
+  <div class="toast-aviso">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ aviso() }}</span>
   </div>
 }
 

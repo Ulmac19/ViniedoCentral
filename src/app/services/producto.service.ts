@@ -31,6 +31,7 @@ export class ProductsService {
             category: p.categoria,
             description: p.descripcion,
             inStock: p.stock > 0,
+            stock: p.stock ?? 0,
             cantidad: 1,
             precioNeto: p.precio_neto,
             graduacionAlcoholica: p.graduacion_alcoholica ?? 0,
