@@ -6,6 +6,8 @@
   color: white;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
@@ -15,6 +17,7 @@
 .image-container {
   background: transparent;
   height: 250px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,11 +29,20 @@
   object-fit: contain;
 }
 
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .title {
   font-size: 16px;
   margin: 10px 0;
   font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .price {
@@ -38,6 +50,7 @@
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 15px;
+  flex: 1;
 }
 
 .btn-add {
@@ -60,12 +73,13 @@
 .card-add-controls {
   display: flex;
   justify-content: center;
-  margin: 15px auto 0;
+  margin-top: auto;
   height: 40px;
   width: 90%;
+  align-self: center;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  border-radius: 25px; /* Bordes bien redondeados */
-  overflow: hidden; /* Clave para que los hijos no se salgan de la curva */
+  border-radius: 25px;
+  overflow: hidden;
   background: white;
 }
 
@@ -108,14 +122,19 @@
   background-color: #2e0d1e;
 }
 
+.add-btn:disabled {
+  background-color: #b0a0a8;
+  cursor: not-allowed;
+}
+
 .agotado-badge {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #c0392b;
-  background: #fdf0f0;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  background-color: #b0a0a8;
 }

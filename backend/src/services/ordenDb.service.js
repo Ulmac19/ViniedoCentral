@@ -30,7 +30,7 @@ function lineaEnvio(items) {
  * Tras crear la orden en PayPal: guarda cabecera + detalle.
  * AHORA RECIBE idUsuario EN LOS PARÁMETROS
  */
-async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus, idUsuario }) {
+async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus, idUsuario, idDireccion }) {
   const productos = lineasProducto(items);
   const envio = lineaEnvio(items);
   const subtotalProductos = productos.reduce(
@@ -39,14 +39,27 @@ async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus,
   );
   const costoEnvio = envio ? Number(envio.cantidad) * Number(envio.precio) : 0;
 
+  let direccionEntrega = null;
+  if (idDireccion) {
+    const dirs = await query(
+      'SELECT calle, numero_exterior, numero_interior, colonia, ciudad, estado, codigo_postal FROM direcciones WHERE id_direccion = ? LIMIT 1',
+      [idDireccion],
+    );
+    if (dirs[0]) {
+      const d = dirs[0];
+      const numInt = d.numero_interior ? ` Int. ${d.numero_interior}` : '';
+      direccionEntrega = `${d.calle} #${d.numero_exterior}${numInt}, Col. ${d.colonia}, ${d.ciudad}, ${d.estado} CP ${d.codigo_postal}`;
+    }
+  }
+
   await query('START TRANSACTION');
   try {
     const folio = folioUnico();
     const resInsert = await query(
       `INSERT INTO ordenes (
         id_usuario, folio, estado, moneda, subtotal, descuento, costo_envio, total,
-        paypal_order_id, paypal_status
-      ) VALUES (?, ?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?)`,
+        paypal_order_id, paypal_status, direccion_entrega
+      ) VALUES (?, ?, 'creada_paypal', 'MXN', ?, 0, ?, ?, ?, ?, ?)`,
       [
         idUsuario || null,
         folio,
@@ -55,6 +68,7 @@ async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus,
         Number(Number(total).toFixed(2)),
         paypalOrderId,
         paypalStatus || null,
+        direccionEntrega,
       ],
     );
     const idOrden = resInsert.insertId;

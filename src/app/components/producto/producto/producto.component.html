@@ -9,8 +9,8 @@
 
     <div class="card-add-controls" (click)="$event.stopPropagation()">
       @if (product.inStock) {
-        <input type="number" class="qty-input" min="1" [max]="product.stock" value="1" #cantidadInput>
-        <button class="add-btn" (click)="onAdd(cantidadInput.value)">
+        <input type="number" class="qty-input" min="1" [max]="product.stock" value="1" #cantidadInput (input)="onCantidadChange(cantidadInput.value)">
+        <button class="add-btn" (click)="onAdd(cantidadInput.value)" [disabled]="!cantidadValida()">
           <i class="fas fa-cart-plus"></i> Añadir
         </button>
       } @else {

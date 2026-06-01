@@ -3,7 +3,7 @@ const { persistirOrdenCreada, persistirCapturaPaypal } = require('../services/or
 
 async function createOrder(req, res) {
   try {
-    const { items, total } = req.body;
+    const { items, total, id_direccion } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
@@ -25,7 +25,8 @@ async function createOrder(req, res) {
         total,
         paypalOrderId: order.id,
         paypalStatus: order.status,
-        idUsuario: req.usuario.id // <-- PASAMOS EL ID DEL USUARIO DESDE EL TOKEN
+        idUsuario: req.usuario.id,
+        idDireccion: id_direccion ?? null,
       });
     } catch (dbErr) {
       console.error('Orden PayPal creada pero falló guardado en BD:', dbErr.message);

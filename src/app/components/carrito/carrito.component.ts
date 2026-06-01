@@ -95,7 +95,7 @@ export class CarritoComponent implements AfterViewInit {
 
   // --- LÓGICA DE PAYPAL IMPORTADA DESDE CHECKOUT ---
 
-  private construirPayload(): { items: any[]; total: number } {
+  private construirPayload(): { items: any[]; total: number; id_direccion: number | null } {
     const lineas: any[] = this.productos().map((p) => ({
       id_producto: p.id,
       nombre: p.name,
@@ -110,7 +110,7 @@ export class CarritoComponent implements AfterViewInit {
         precio: this.costoEnvio(),
       });
     }
-    return { items: lineas, total: this.total() };
+    return { items: lineas, total: this.total(), id_direccion: this.idSeleccionada() ?? null };
   }
 
   private mensajeDeErrorHttp(e: unknown): string {
