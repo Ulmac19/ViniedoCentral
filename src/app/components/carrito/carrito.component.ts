@@ -182,12 +182,12 @@ export class CarritoComponent implements AfterViewInit {
           },
           onApprove: async (data: { orderID: string }) => {
             try {
-              await firstValueFrom(this.paypalApi.capturarOrden(data.orderID));
-              this.carritoService.vaciarCarrito();
+              await firstValueFrom(this.paypalApi.capturarOrden(data.orderID)); // Si la captura es exitosa, vaciamos el carrito
+              this.carritoService.vaciarCarrito(); // Solo vaciamos el carrito después de que el pago se haya procesado correctamente
 
-              this.enviandoRecibo.set(true);
+              this.enviandoRecibo.set(true); // Mostramos un mensaje de "Enviando recibo..." mientras se envía el correo
               try {
-                await firstValueFrom(this.ordenesService.enviarRecibo(data.orderID));
+                await firstValueFrom(this.ordenesService.enviarRecibo(data.orderID)); // Intentamos enviar el recibo por correo
                 this.reciboEnviado.set(true);
               } catch {
                 // El pago ya se procesó — el recibo es secundario

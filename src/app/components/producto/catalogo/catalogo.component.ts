@@ -31,18 +31,19 @@ export class CatalogoComponent {
   });
 
   products = signal<Product[]>([]);
-  searchTerm = signal<string>('');
-  categoriasActivas = signal<string[]>([]);
-  soloEnStock = signal(false);
+  searchTerm = signal<string>(''); //Texto que el usuario ingresa en el campo de búsqueda
+  categoriasActivas = signal<string[]>([]); //Categorías que el usuario ha seleccionado para filtrar
+  soloEnStock = signal(false); //Indica si el usuario quiere ver solo productos en stock
   filtrosAbiertos = signal(false);
 
   categorias = computed(() =>
     [...new Set(this.products().map(p => p.category))].sort()
   );
 
+  // Método para alternar la selección de una categoría en el filtro
   toggleCategoria(cat: string) {
     this.categoriasActivas.update(prev =>
-      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat] // Si la categoría ya está activa, la quitamos; si no, la agregamos
     );
   }
 
@@ -55,6 +56,7 @@ export class CatalogoComponent {
     return this.categoriasActivas().length + (this.soloEnStock() ? 1 : 0);
   }
 
+  // Computed que devuelve la lista de productos filtrados según el término de búsqueda, las categorías seleccionadas y el filtro de stock
   filteredProducts = computed(() => {
     const term  = this.searchTerm().toLowerCase().trim();
     const cats  = this.categoriasActivas();
@@ -64,7 +66,7 @@ export class CatalogoComponent {
       const matchSearch = !term || p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term);
       const matchCat    = cats.length === 0 || cats.includes(p.category);
       const matchStock  = !stock || p.inStock;
-      return matchSearch && matchCat && matchStock;
+      return matchSearch && matchCat && matchStock; // El producto debe cumplir con todas las condiciones para ser incluido en la lista filtrada
     });
   });
 
@@ -80,9 +82,10 @@ export class CatalogoComponent {
     });
   }
 
+  // Método para manejar el evento de búsqueda
   onSearch(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    this.searchTerm.set(inputElement.value);
+    const inputElement = event.target as HTMLInputElement; // Aseguramos que el target es un input
+    this.searchTerm.set(inputElement.value); // Actualizamos la señal con el nuevo término de búsqueda
   }
 
   toast = signal('');
@@ -91,19 +94,20 @@ export class CatalogoComponent {
   private avisoTimer: any = null;
 
   agregar(eventData: {producto: Product, cantidad: number}) {
-    const { producto, cantidad } = eventData;
-    const enCarrito = this.carritoService.productos().find(p => p.id === producto.id)?.cantidad ?? 0;
+    const { producto, cantidad } = eventData; // Desestructuramos el objeto recibido para obtener el producto y la cantidad
+    const enCarrito = this.carritoService.productos().find(p => p.id === producto.id)?.cantidad ?? 0; // Cantidad del producto que ya está en el carrito
     const disponible = producto.stock - enCarrito;
 
     if (this.toastTimer) clearTimeout(this.toastTimer);
     if (this.avisoTimer) clearTimeout(this.avisoTimer);
 
+    // Si no hay unidades disponibles para agregar, mostramos un aviso y no hacemos nada
     if (disponible <= 0) {
       this.aviso.set(`Ya tienes el máximo disponible de "${producto.name}" en tu carrito (${producto.stock} u.).`);
       this.avisoTimer = setTimeout(() => this.aviso.set(''), 3500);
       return;
     }
-
+    // Si la cantidad solicitada excede lo disponible, agregamos solo lo que queda y mostramos un aviso
     if (cantidad > disponible) {
       this.carritoService.agregar(producto, disponible);
       this.aviso.set(`Solo se agregaron ${disponible} de "${producto.name}" — es todo el stock disponible.`);
@@ -111,7 +115,7 @@ export class CatalogoComponent {
       return;
     }
 
-    this.carritoService.agregar(producto, cantidad);
+    this.carritoService.agregar(producto, cantidad); // Agregamos la cantidad solicitada al carrito
     this.toast.set(producto.name);
     this.toastTimer = setTimeout(() => this.toast.set(''), 2500);
   }

@@ -6,6 +6,7 @@ function query(sql, params = []) {
   });
 }
 
+// Genera un folio único para cada orden, combinando un prefijo, la fecha actual en base36 y una cadena aleatoria
 function folioUnico() {
   return `VTC-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`.toUpperCase();
 }

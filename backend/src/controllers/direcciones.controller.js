@@ -10,9 +10,9 @@ const ESTADOS_MX = [
 ];
 
 // Validadores por campo
-const RE_TEXTO_LIBRE = /^[\w\sÀ-ÿáéíóúÁÉÍÓÚüÜñÑ.,'\-#\/]{1,150}$/;
-const RE_NUMERO     = /^[\w\-#\/]{1,20}$/;
-const RE_CP         = /^\d{5}$/;
+const RE_TEXTO_LIBRE = /^[\w\sÀ-ÿáéíóúÁÉÍÓÚüÜñÑ.,'\-#\/]{1,150}$/; // Letras, números, espacios, algunos acentos y caracteres comunes en direcciones. Máximo 150 caracteres.
+const RE_NUMERO     = /^[\w\-#\/]{1,20}$/; // Letras, números, guión, # y / para números exteriores e interiores. Máximo 20 caracteres.
+const RE_CP         = /^\d{5}$/; // Exactamente 5 dígitos numéricos para código postal.
 
 function validarDireccion({ alias, calle, numero_exterior, numero_interior, colonia, municipio, ciudad, estado, codigo_postal, referencias }) {
   if (!alias?.trim() || alias.trim().length > 50)

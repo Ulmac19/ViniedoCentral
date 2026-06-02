@@ -54,16 +54,18 @@ const iniciarSesion = async (req, res) => {
 
         const usuario = users[0];
 
-        const match = await bcrypt.compare(password, usuario.password_hash);
+        const match = await bcrypt.compare(password, usuario.password_hash); // Compara la contraseña ingresada con el hash almacenado
         if (!match) {
             return res.status(401).json({ error: 'Credenciales inválidas.' });
         }
 
+        // Si las credenciales son válidas, se genera un token JWT con el ID y rol del usuario
         const payload = {
             id: usuario.id_usuario,
             rol: usuario.rol
         };
 
+        // Generar token JWT con los datos del usuario (en payload) y la firma con una expiración de 8 horas
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '8h' });
 
         res.status(200).json({

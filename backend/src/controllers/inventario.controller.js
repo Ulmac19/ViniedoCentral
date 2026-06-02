@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-const getProductos = async (req, res) => {
+const getProductos = async (req, res) => { // Trae el listado completo de productos, sin filtros. Solo para uso administrativo.
     try {
         const [rows] = await db.promise().query('SELECT * FROM productos');
         res.json(rows);

@@ -24,8 +24,8 @@ export class ProductCardComponent {
 
   onAdd(cantidadStr: string) {
     const cantidad = parseInt(cantidadStr);
-    if (!cantidad || cantidad < 1) return;
-    this.add.emit({ producto: this.product, cantidad });
+    if (!cantidad || cantidad < 1) return; // Validamos que la cantidad sea un número positivo o al menos 1
+    this.add.emit({ producto: this.product, cantidad }); // Emitimos el producto junto con la cantidad seleccionada
   }
 }
 

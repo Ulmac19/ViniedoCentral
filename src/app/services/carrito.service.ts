@@ -25,16 +25,18 @@ export class CarritoService {
       const enCarrito = existe?.cantidad ?? 0;
       const disponible = producto.stock - enCarrito;
 
+      // Si no hay unidades disponibles para agregar, no hacemos nada
       if (disponible <= 0) return lista;
 
       const agregar = Math.min(cantidadAgregada, disponible);
 
+      // Si el producto ya está en el carrito, actualizamos la cantidad; si no, lo agregamos como nuevo
       if (existe) {
         return lista.map(p =>
           p.id === producto.id ? { ...p, cantidad: p.cantidad + agregar } : p
         );
       }
-      return [...lista, { ...producto, cantidad: agregar }];
+      return [...lista, { ...producto, cantidad: agregar }]; // Agregamos el producto con la cantidad a agregar (ajustada por disponibilidad)
     });
   }
 

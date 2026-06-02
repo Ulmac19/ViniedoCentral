@@ -32,7 +32,7 @@ function escapeXml(str) {
  * @param {number} opts.total
  */
 function generarCFDI({ folio, fecha, usuario, productos, subtotal, costoEnvio, total }) {
-  const conceptos = [];
+  const conceptos = []; // Array para almacenar los conceptos con cálculos de impuestos, luego se usará para generar el XML
   // Agrupamos IEPS por tasa para el resumen
   const iepsGrupos = {};
   let totalIvaBase = 0;

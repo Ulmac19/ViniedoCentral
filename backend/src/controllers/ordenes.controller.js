@@ -63,7 +63,7 @@ const enviarRecibo = async (req, res) => {
 
         // Obtener la orden verificando que pertenece al usuario del token
         const [ordenes] = await db.promise().query(
-            `SELECT o.*, u.nombre, u.email
+            `SELECT o.*, u.nombre, u.email 
              FROM ordenes o
              JOIN usuarios u ON o.id_usuario = u.id_usuario
              WHERE o.paypal_order_id = ? AND o.id_usuario = ?`,
@@ -89,7 +89,7 @@ const enviarRecibo = async (req, res) => {
             0
         );
 
-        const fecha = new Date().toISOString().slice(0, 19);
+        const fecha = new Date().toISOString().slice(0, 19); // Formato YYYY-MM-DD HH:MM:SS
 
         const xmlContent = generarCFDI({
             folio: orden.folio,

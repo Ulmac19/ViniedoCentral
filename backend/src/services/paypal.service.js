@@ -26,13 +26,13 @@ function toMoney2(n) {
 }
 
 async function createPaypalOrder(orderData) {
-  const accessToken = await getAccessToken();
+  const accessToken = await getAccessToken(); // Obtenemos el token de acceso para autenticar la solicitud a PayPal
 
   /** PayPal exige que item_total === suma de (cantidad × precio_unitario) por línea. */
   const items = orderData.items.map((item) => {
-    const qty = Math.max(1, Math.floor(Number(item.cantidad)));
-    const unit = Math.round(Number(item.precio) * 100) / 100;
-    return {
+    const qty = Math.max(1, Math.floor(Number(item.cantidad))); // Aseguramos que la cantidad sea al menos 1 y un número entero
+    const unit = Math.round(Number(item.precio) * 100) / 100; // Redondeamos el precio unitario a 2 decimales para evitar problemas de precisión con PayPal
+    return { // PayPal tiene un límite de 127 caracteres para el nombre del producto, así que truncamos si es necesario
       name: String(item.nombre ?? 'Producto').slice(0, 127),
       quantity: String(qty),
       unit_amount: {

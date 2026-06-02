@@ -42,14 +42,14 @@ export class AuthService {
 
   /** Autentica al usuario. El pipe tap persiste la sesión como efecto secundario. */
   login(email: string, password: string) {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe( // La respuesta esperada es { token: string, usuario: { id, nombre, email, rol } }
       tap(respuesta => {
-        this.guardarSesion(respuesta.token, respuesta.usuario);
+        this.guardarSesion(respuesta.token, respuesta.usuario); // Guarda en señales y localStorage
       })
     );
   }
 
-  /** Crea una cuenta nueva. No inicia sesión automáticamente; el componente redirige al login. */
+  /** Crea una cuenta nueva*/
   registro(nombre: string, email: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/registro`, { nombre, email, password });
   }
