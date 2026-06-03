@@ -156,6 +156,7 @@ export class CatalogoComponent {
   cerrarSidebar() { this.sidebarAbierto.set(false); }
 
   logout() {
+    this.carritoService.vaciarCarrito();
     this.authService.logout();
     this.router.navigate(['/login']);
   }
