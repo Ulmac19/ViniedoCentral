@@ -1,59 +1,154 @@
-# MiProyecto
+[README_VitisAndByte.md](https://github.com/user-attachments/files/28676814/README_VitisAndByte.md)
+# Vitis & Byte 🍷
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+> Sistema ERP y plataforma e-commerce diseñados específicamente para el sector vitivinícola.
 
-## Development server
+---
 
-To start a local development server, run:
+## Descripción general
 
-```bash
-ng serve
+**Vitis & Byte** es una solución de software empresarial completa desarrollada para digitalizar y optimizar las operaciones de un negocio vitivinícola. El sistema integra un módulo de planificación de recursos empresariales (ERP) con una tienda en línea, permitiendo gestionar desde el inventario y las ventas hasta la facturación y el catálogo de productos desde una sola plataforma.
+
+El proyecto abarca más de 200 SKUs de productos, con un esquema de base de datos relacional normalizado hasta Tercera Forma Normal (3FN) para garantizar integridad y eficiencia en las consultas.
+
+---
+
+## Módulos del sistema
+
+### ERP
+| Módulo | Funcionalidad |
+|---|---|
+| Inventario | Alta, baja y consulta de productos; control de stock |
+| Ventas | Registro de pedidos, historial de clientes |
+| Facturación | Generación de comprobantes de venta |
+| Reportes | Consultas de ventas en tiempo real |
+
+### E-commerce
+| Módulo | Funcionalidad |
+|---|---|
+| Catálogo | Exhibición paginada de más de 200 SKUs |
+| Carrito | Gestión de órdenes de compra en línea |
+| Panel admin | Gestión de productos y pedidos desde interfaz web |
+
+---
+
+## Stack tecnológico
+
+| Capa | Tecnología |
+|---|---|
+| Backend / Lógica de negocio | Java, C# |
+| Frontend | JavaScript, HTML5, CSS3 |
+| Base de datos | SQL (esquema relacional normalizado hasta 3FN) |
+| Control de versiones | Git / GitHub |
+
+---
+
+## Diseño de base de datos
+
+El esquema relacional fue diseñado siguiendo el proceso de normalización hasta **Tercera Forma Normal (3FN)**, eliminando redundancias y garantizando la integridad referencial entre entidades clave:
+
+```
+Productos ──< Inventario >── Almacén
+    │
+    └──< DetalleVenta >── Venta ──> Cliente
+                              │
+                              └──> Factura
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+**Entidades principales:**
+- `Producto` — SKU, nombre, categoría, precio, stock
+- `Cliente` — datos de contacto, historial de compras
+- `Venta` — encabezado de transacción
+- `DetalleVenta` — líneas de productos por venta
+- `Inventario` — movimientos de entrada/salida
+- `Factura` — comprobante vinculado a venta
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Capturas del sistema
 
-```bash
-ng generate component component-name
+> *(Próximamente — imágenes de la interfaz de inventario, módulo de ventas y catálogo e-commerce)*
+
+---
+
+## Estructura del repositorio
+
+```
+VitisAndByte/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/      # Lógica de negocio por módulo
+│   │   ├── models/           # Entidades y acceso a datos
+│   │   └── services/         # Servicios transversales
+│   └── db/
+│       ├── schema.sql        # Esquema completo de la BD
+│       └── seed.sql          # Datos de prueba
+├── frontend/
+│   ├── erp/                  # Interfaz del sistema interno
+│   └── ecommerce/            # Tienda en línea
+└── README.md
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
+
+## Cómo ejecutar
+
+### Requisitos previos
+
+- Java 17+ o .NET 6+
+- Servidor de base de datos compatible con SQL (MySQL / SQL Server)
+- Navegador moderno para el frontend
+
+### Pasos
 
 ```bash
-ng generate --help
+# 1. Clonar el repositorio
+git clone https://github.com/Pelayo04/VitisAndByte.git
+
+# 2. Crear la base de datos
+# Ejecutar backend/db/schema.sql en tu servidor SQL
+# Ejecutar backend/db/seed.sql para datos de prueba
+
+# 3. Configurar cadena de conexión
+# Editar backend/src/config (ver archivo de ejemplo config.example)
+
+# 4. Ejecutar el backend
+# Java: mvn spring-boot:run
+# C#:   dotnet run
+
+# 5. Abrir el frontend
+# Abrir frontend/ecommerce/index.html en el navegador
+# Abrir frontend/erp/index.html para el panel de administración
 ```
 
-## Building
+---
 
-To build the project run:
+## Decisiones de diseño destacadas
 
-```bash
-ng build
-```
+- **Normalización 3FN** — evita anomalías de actualización y reduce redundancia en catálogo con más de 200 SKUs
+- **Separación ERP / e-commerce** — arquitectura modular que permite escalar cada sistema de forma independiente
+- **Interfaz orientada a usuarios no técnicos** — flujos simplificados para captura de pedidos y gestión de inventario
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Aprendizajes clave del proyecto
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- Modelado de bases de datos relacionales para dominio de negocio real
+- Desarrollo de interfaces administrativas usables y eficientes
+- Integración de lógica de negocio compleja (inventario, facturación, ventas) en un solo sistema
+- Gestión de un catálogo de producto a escala (200+ SKUs)
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## Estado del proyecto
 
-For end-to-end (e2e) testing, run:
+🟢 **Completado** — Sistema funcional entregado. Pendiente de despliegue en producción.
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Autor
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Daniel Eduardo Pelayo Gómez**
+**Ulises Alberto Macías Ramírez**
+Tecnólogos en Desarrollo de Software — CETI Colomos
+[LinkedIn](https://www.linkedin.com/in/daniel-pelayo-4097ab414) · [GitHub](https://github.com/Pelayo04)
