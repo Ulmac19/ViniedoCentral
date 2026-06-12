@@ -2,6 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 
+/**
+ * OrdenesService — Historial de pedidos y disparo del recibo CFDI.
+ *
+ * Consume /api/ordenes. Todas las llamadas adjuntan el JWT en la cabecera
+ * Authorization (vía getHeaders) porque el backend filtra por usuario.
+ */
 @Injectable({ providedIn: 'root' })
 export class OrdenesService {
   private http = inject(HttpClient);

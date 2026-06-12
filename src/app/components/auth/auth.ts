@@ -4,6 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { TERMINOS_Y_CONDICIONES } from '../../legal/terminos.content';
 
+/**
+ * AuthComponent — Pantalla de acceso con dos modos (login / registro).
+ *
+ * El flag `esLogin` alterna entre ambos formularios. Tras un login exitoso
+ * redirige según el rol: admin → /inventario, cliente → /catalogo. En registro,
+ * inicia sesión automáticamente y manda al /catalogo. Estados de carga y error
+ * son signals para que la vista reaccione (HttpClient con withFetch).
+ */
 @Component({
   selector: 'app-auth',
   standalone: true,

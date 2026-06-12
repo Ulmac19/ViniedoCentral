@@ -1,3 +1,5 @@
+// Texto de Términos y Condiciones como HTML. Se inyecta con [innerHTML] en los
+// modales legales (AuthComponent y CatalogoComponent). Solo contenido, sin lógica.
 export const TERMINOS_Y_CONDICIONES = `
 <h2>Términos y Condiciones de Uso: Vitis & Byte</h2>
 

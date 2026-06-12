@@ -1,6 +1,21 @@
+/**
+ * paypal.controller.js — Orquesta el flujo de pago con PayPal.
+ *
+ * El pago se hace en dos pasos:
+ *   1. createOrder  → crea la orden en PayPal y la persiste como 'creada_paypal'.
+ *   2. captureOrder → captura el cobro y marca la orden como 'pagada'.
+ *
+ * Regla clave: si PayPal responde OK pero la BD falla, NO bloqueamos al
+ * comprador (el dinero ya se movió en PayPal); registramos el error y seguimos.
+ */
 const { createPaypalOrder, capturePaypalOrder } = require('../services/paypal.service');
 const { persistirOrdenCreada, persistirCapturaPaypal } = require('../services/ordenDb.service');
 
+/**
+ * POST /api/paypal/crear-orden
+ * Crea la orden en PayPal y guarda la cabecera + detalle en la BD.
+ * El id_usuario se toma del token (req.usuario.id), nunca del body.
+ */
 async function createOrder(req, res) {
   try {
     const { items, total, id_direccion } = req.body;
@@ -51,6 +66,11 @@ async function createOrder(req, res) {
   }
 }
 
+/**
+ * POST /api/paypal/capturar-orden
+ * Captura el cobro en PayPal y actualiza la orden a 'pagada', registra el pago
+ * y descuenta el stock. Nota: el frontend envía `orderId` (camelCase exacto).
+ */
 async function captureOrder(req, res) {
   try {
     const { orderId } = req.body;

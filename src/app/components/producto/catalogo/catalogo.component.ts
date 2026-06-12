@@ -9,6 +9,16 @@ import { AuthService } from '../../../services/auth.service';
 import { AVISO_PRIVACIDAD } from '../../../legal/aviso-privacidad.content';
 import { TERMINOS_Y_CONDICIONES } from '../../../legal/terminos.content';
 
+/**
+ * CatalogoComponent — Vista principal de la tienda (lista de productos).
+ *
+ * Responsabilidades:
+ *   - Cargar el catálogo desde ProductsService y mostrarlo en tarjetas.
+ *   - Filtrar por búsqueda, categorías múltiples y disponibilidad (computed).
+ *   - Agregar al carrito respetando el stock (avisa si se pide de más).
+ *   - Modales de detalle del producto y de textos legales; cierre de sesión.
+ * Todo el estado de UI vive en signals para integrarse con HttpClient withFetch.
+ */
 @Component({
   selector: 'app-catalogo',
   standalone: true,

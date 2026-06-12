@@ -2,6 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 
+/**
+ * PaypalService — Puente entre el botón de PayPal y nuestro backend.
+ *
+ * No habla con PayPal directamente: llama a nuestros endpoints
+ * (/crear-orden y /capturar-orden), que son los que usan las credenciales
+ * de PayPal del lado del servidor. Adjunta el JWT en cada petición.
+ */
 @Injectable({ providedIn: 'root' })
 
 export class PaypalService {

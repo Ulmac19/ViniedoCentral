@@ -17,6 +17,20 @@ import { PaypalService } from '../../services/paypal.service';
 import { DireccionesService, Direccion } from '../../services/direcciones.service';
 import { OrdenesService } from '../../services/ordenes.service';
 
+/**
+ * CarritoComponent — Carrito y checkout en una sola vista.
+ *
+ * Muestra los productos del carrito, permite ajustar cantidades (sin pasar del
+ * stock) y elegir dirección de envío. El pago se integra con el SDK de PayPal
+ * cargado en index.html: esperarPayPalDesdeIndexHtml() aguarda a que el script
+ * esté listo, luego se renderizan los botones.
+ *
+ * Flujo de pago:
+ *   createOrder → backend crea la orden en PayPal.
+ *   onApprove   → backend captura el cobro, se vacía el carrito y se dispara el
+ *                 envío del recibo CFDI por correo; tras 2.5s navega al catálogo.
+ * El recibo es secundario: si falla, el pago ya quedó hecho y no se bloquea.
+ */
 @Component({
   selector: 'app-carrito',
   standalone: true,

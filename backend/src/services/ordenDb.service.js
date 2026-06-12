@@ -1,5 +1,16 @@
+/**
+ * ordenDb.service.js — Persistencia de órdenes y pagos en la base de datos.
+ *
+ * Separa el acceso a datos del controlador de PayPal. Dos operaciones, cada una
+ * envuelta en una transacción para que cabecera + detalle se guarden de forma
+ * atómica (si algo falla, ROLLBACK y no queda media orden):
+ *   persistirOrdenCreada   → al crear la orden: cabecera (ordenes) + líneas (orden_detalle).
+ *   persistirCapturaPaypal → al capturar: marca 'pagada', registra el pago y baja el stock.
+ */
 const db = require('../config/db');
 
+// Envuelve db.query en una Promesa para poder usar async/await con la conexión
+// basada en callbacks (mysql2 sin el wrapper .promise()).
 function query(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.query(sql, params, (err, results) => (err ? reject(err) : resolve(results)));
@@ -11,12 +22,15 @@ function folioUnico() {
   return `VTC-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`.toUpperCase();
 }
 
+// Separa las líneas que son productos reales (tienen id_producto numérico) de
+// la línea sintética de "Envío", que viene sin id_producto.
 function lineasProducto(items) {
   return (items || []).filter(
     (i) => i.id_producto != null && i.id_producto !== '' && !Number.isNaN(Number(i.id_producto)),
   );
 }
 
+// Localiza la línea de envío (sin id_producto y cuyo nombre contiene "envío").
 function lineaEnvio(items) {
   return (items || []).find(
     (i) =>
@@ -103,6 +117,8 @@ async function persistirOrdenCreada({ items, total, paypalOrderId, paypalStatus,
   }
 }
 
+// Extrae del JSON (anidado) que devuelve PayPal los datos que nos interesan
+// guardar: id de captura, monto, moneda, email del pagador y estado.
 function extraerCaptura(captureData) {
   const capture = captureData?.purchase_units?.[0]?.payments?.captures?.[0];
   return {

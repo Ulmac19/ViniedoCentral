@@ -1,3 +1,11 @@
+/**
+ * app.routes.ts — Tabla de rutas de la aplicación.
+ *
+ * Cada ruta declara qué componente renderiza y qué guards deben pasar antes:
+ *   clienteGuard → rutas de cliente (bloquea invitados y administradores).
+ *   authGuard + adminGuard → /inventario (solo administradores).
+ * La ruta vacía y las desconocidas (**) redirigen a /login.
+ */
 import { Routes } from '@angular/router';
 import { CatalogoComponent } from './components/producto/catalogo/catalogo.component';
 import { CarritoComponent } from './components/carrito/carrito.component';

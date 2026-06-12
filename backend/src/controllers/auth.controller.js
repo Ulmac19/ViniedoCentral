@@ -1,3 +1,10 @@
+/**
+ * auth.controller.js — Autenticación y gestión de la cuenta del usuario.
+ *
+ * Cubre el ciclo de vida de la cuenta: registro, login (emisión de JWT),
+ * lectura/actualización de perfil y eliminación de cuenta. Las contraseñas se
+ * guardan siempre como hash bcrypt (12 rondas); nunca en texto plano.
+ */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
@@ -85,6 +92,10 @@ const iniciarSesion = async (req, res) => {
     }
 };
 
+/**
+ * GET /api/auth/perfil — Devuelve los datos del usuario autenticado.
+ * El id sale del token (req.usuario.id), no del body, para evitar suplantación.
+ */
 const obtenerPerfil = async (req, res) => {
     try {
         const [rows] = await db.promise().query(
@@ -98,6 +109,10 @@ const obtenerPerfil = async (req, res) => {
     }
 };
 
+/**
+ * PUT /api/auth/perfil — Actualiza nombre/email y, opcionalmente, la contraseña.
+ * Verifica que el email no esté en uso por otro usuario antes de guardar.
+ */
 const actualizarPerfil = async (req, res) => {
     try {
         const { nombre, email, password } = req.body;
@@ -130,6 +145,11 @@ const actualizarPerfil = async (req, res) => {
     }
 };
 
+/**
+ * DELETE /api/auth/cuenta — Borrado definitivo (hard delete) de la cuenta.
+ * Exige la contraseña como confirmación. El FK ON DELETE CASCADE arrastra
+ * las órdenes y direcciones del usuario.
+ */
 const eliminarCuenta = async (req, res) => {
     try {
         const { password } = req.body;

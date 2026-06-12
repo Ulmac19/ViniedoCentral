@@ -2,6 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 
+/**
+ * InventarioService — CRUD de productos para el panel de administración.
+ *
+ * Consume /api/inventario, protegido en el backend por rol 'administrador'.
+ * Cada método adjunta el JWT; sin un token de admin el backend responde 403.
+ */
 @Injectable({ providedIn: 'root' })
 export class InventarioService {
   private http = inject(HttpClient);

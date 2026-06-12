@@ -4,6 +4,15 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DireccionesService, Direccion } from '../../services/direcciones.service';
 
+/**
+ * PerfilComponent — Perfil del usuario: datos, direcciones y baja de cuenta.
+ *
+ * Tres bloques:
+ *   - Datos de la cuenta: se editan con borradores (nombreDraft/emailDraft) para
+ *     no actualizar la cabecera en vivo; el botón guardar se activa con hayCambios.
+ *   - Direcciones (máx. 4): alta/edición en modal y borrado con modal de confirmación.
+ *   - Eliminar cuenta: flujo de 2 pasos que pide la contraseña antes del borrado.
+ */
 @Component({
   selector: 'app-perfil',
   standalone: true,

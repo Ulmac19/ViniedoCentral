@@ -2,6 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 
+/**
+ * Direccion — Forma de una dirección de envío.
+ * Los campos opcionales (con `?`) pueden venir vacíos/nulos desde la BD.
+ * Coincide con las columnas de la tabla `direcciones` del backend.
+ */
 export interface Direccion {
   id_direccion?: number;
   id_usuario?: number;
@@ -17,6 +22,11 @@ export interface Direccion {
   referencias?: string;
 }
 
+/**
+ * DireccionesService — CRUD de direcciones del usuario autenticado.
+ * Consume /api/direcciones (máx. 4 por usuario, validadas en el backend).
+ * Usado por PerfilComponent y por el selector de envío en CarritoComponent.
+ */
 @Injectable({ providedIn: 'root' })
 export class DireccionesService {
   private http = inject(HttpClient);

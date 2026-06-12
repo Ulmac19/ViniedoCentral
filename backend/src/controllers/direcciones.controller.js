@@ -1,5 +1,17 @@
+/**
+ * direcciones.controller.js — CRUD de direcciones de envío del usuario.
+ *
+ * Reglas del dominio:
+ *   - Máximo 4 direcciones por usuario (validado en crearDireccion).
+ *   - Toda dirección se valida campo a campo en el backend (no se confía en el
+ *     frontend): estado dentro del catálogo oficial, CP de 5 dígitos, etc.
+ *   - Cada operación filtra por req.usuario.id para que un usuario solo pueda
+ *     ver o modificar sus propias direcciones.
+ */
 const db = require('../config/db');
 
+// Catálogo oficial de los 32 estados de México. El campo `estado` solo acepta
+// uno de estos valores exactos.
 const ESTADOS_MX = [
   'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas',
   'Chihuahua', 'Ciudad de México', 'Coahuila de Zaragoza', 'Colima', 'Durango',
@@ -14,6 +26,10 @@ const RE_TEXTO_LIBRE = /^[\w\sÀ-ÿáéíóúÁÉÍÓÚüÜñÑ.,'\-#\/]{1,150}$
 const RE_NUMERO     = /^[\w\-#\/]{1,20}$/; // Letras, números, guión, # y / para números exteriores e interiores. Máximo 20 caracteres.
 const RE_CP         = /^\d{5}$/; // Exactamente 5 dígitos numéricos para código postal.
 
+/**
+ * Valida todos los campos de una dirección.
+ * @returns {string|null} Mensaje de error legible si algo es inválido, o null si todo es correcto.
+ */
 function validarDireccion({ alias, calle, numero_exterior, numero_interior, colonia, municipio, ciudad, estado, codigo_postal, referencias }) {
   if (!alias?.trim() || alias.trim().length > 50)
     return 'Alias inválido (máximo 50 caracteres, sin caracteres especiales).';

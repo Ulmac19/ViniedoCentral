@@ -1,3 +1,10 @@
+/**
+ * inventario.controller.js — Gestión de productos (panel de administración).
+ *
+ * Todas estas rutas pasan por verificarToken + adminMiddleware, así que solo un
+ * administrador llega aquí. A diferencia del catálogo público, lista también los
+ * productos inactivos. El "borrado" es un soft delete (activo = 0).
+ */
 const db = require('../config/db');
 
 const getProductos = async (req, res) => { // Trae el listado completo de productos, sin filtros. Solo para uso administrativo.
@@ -45,6 +52,8 @@ const actualizarProducto = async (req, res) => {
     }
 };
 
+// Soft delete: no borra la fila, solo marca activo = 0 para conservar el
+// historial (órdenes que referencian el producto siguen siendo válidas).
 const eliminarProducto = async (req, res) => {
     try {
         const { id } = req.params;

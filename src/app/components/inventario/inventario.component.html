@@ -122,3 +122,16 @@
     </div>
   </div>
 }
+
+@if (confirmAbierto()) {
+  <div class="modal-overlay" (click)="cancelarConfirm()">
+    <div class="modal modal-confirm" (click)="$event.stopPropagation()">
+      <h2>Confirmar acción</h2>
+      <p class="modal-texto">{{ confirmMensaje() }}</p>
+      <div class="modal-botones">
+        <button class="btn-peligro" (click)="ejecutarConfirm()">Sí, confirmar</button>
+        <button class="btn-cancelar" (click)="cancelarConfirm()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+}

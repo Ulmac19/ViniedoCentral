@@ -1,9 +1,20 @@
+/**
+ * paypal.service.js — Cliente de la API REST de PayPal (sandbox).
+ *
+ * Encapsula las llamadas HTTP a PayPal para que los controladores no traten con
+ * tokens, auth ni formatos de PayPal. Tres pasos:
+ *   getAccessToken    → token OAuth con las credenciales (Basic auth).
+ *   createPaypalOrder → crea la orden a partir de los items del carrito.
+ *   capturePaypalOrder→ captura (cobra) una orden ya aprobada por el comprador.
+ */
 const { paypalConfig } = require('../config/paypal.config');
 
+// PayPal autentica la obtención del token con Basic auth: client_id:secret en base64.
 function getBasicAuth() {
   return Buffer.from(`${paypalConfig.clientId}:${paypalConfig.clientSecret}`).toString('base64');
 }
 
+// Obtiene un access token OAuth2 (válido por un tiempo) para las demás llamadas.
 async function getAccessToken() {
   const response = await fetch(`${paypalConfig.baseUrl}/v1/oauth2/token`, {
     method: 'POST',
@@ -21,10 +32,13 @@ async function getAccessToken() {
   return data.access_token;
 }
 
+// Normaliza un número a string monetario con 2 decimales ("123.40").
+// PayPal rechaza la orden si los importes no cuadran al centavo.
 function toMoney2(n) {
   return (Math.round(Number(n) * 100) / 100).toFixed(2);
 }
 
+// Crea una orden de pago en PayPal a partir de los items del carrito.
 async function createPaypalOrder(orderData) {
   const accessToken = await getAccessToken(); // Obtenemos el token de acceso para autenticar la solicitud a PayPal
 
@@ -85,6 +99,7 @@ async function createPaypalOrder(orderData) {
   return data;
 }
 
+// Captura (cobra) una orden ya aprobada por el comprador en el popup de PayPal.
 async function capturePaypalOrder(orderId) {
   const accessToken = await getAccessToken();
 

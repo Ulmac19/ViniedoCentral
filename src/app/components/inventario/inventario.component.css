@@ -242,3 +242,28 @@ tr.inactivo td {
 }
 
 .btn-cancelar:hover { background: #e0d0e0; }
+
+/* Modal de confirmación (variante compacta del modal) */
+.modal-confirm {
+  max-width: 360px;
+}
+
+.modal-texto {
+  margin: 0 0 0.5rem;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.btn-peligro {
+  flex: 1;
+  background: #c0392b;
+  color: white;
+  border: none;
+  padding: 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn-peligro:hover { background: #a93226; }

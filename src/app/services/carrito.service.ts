@@ -1,6 +1,18 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Product } from '../models/producto.model';
 
+/**
+ * CarritoService — Estado reactivo del carrito de compras.
+ *
+ * Mantiene la lista de productos con signals y deriva subtotal/total/artículos
+ * con computed (se recalculan solos al cambiar el carrito). Respeta el stock
+ * disponible al agregar y descontando lo que ya está en el carrito.
+ *
+ * exportarXML() está @deprecated: el recibo fiscal ahora lo genera el backend
+ * (CFDI 4.0) y se envía por correo; se conserva como referencia del desglose.
+ */
+
+// Tasa de IEPS según graduación alcohólica (misma regla que el backend).
 function tasaIEPS(graduacion: number): number {
   if (graduacion <= 14) return 0.265;
   if (graduacion <= 20) return 0.30;

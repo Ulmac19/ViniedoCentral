@@ -1,3 +1,5 @@
+// Texto del Aviso de Privacidad como HTML. Se muestra con [innerHTML] en el
+// modal legal del catálogo. Solo contenido, sin lógica.
 export const AVISO_PRIVACIDAD = `
 <h2>Aviso de Privacidad</h2>
 

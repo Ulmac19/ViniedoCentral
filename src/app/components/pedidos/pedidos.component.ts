@@ -3,6 +3,13 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrdenesService } from '../../services/ordenes.service';
 
+/**
+ * PedidosComponent — Historial de pedidos del usuario.
+ *
+ * Al iniciar carga la lista de órdenes; al pulsar una, pide su detalle (líneas)
+ * y lo abre en un modal. Mantiene estados de carga y error con signals para
+ * mostrar spinner o mensaje según corresponda.
+ */
 @Component({
   selector: 'app-pedidos',
   standalone: true,

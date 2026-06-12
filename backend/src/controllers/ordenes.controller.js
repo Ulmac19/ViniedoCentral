@@ -1,3 +1,14 @@
+/**
+ * ordenes.controller.js — Historial de pedidos y envío del recibo CFDI.
+ *
+ * Cubre tres acciones del cliente autenticado:
+ *   - getMisPedidos     → lista resumida de sus órdenes.
+ *   - getDetallePedido  → detalle (líneas) de una orden suya.
+ *   - enviarRecibo      → genera el CFDI 4.0 de una orden y lo envía por correo.
+ *
+ * Toda consulta filtra por req.usuario.id para que un usuario no pueda acceder a
+ * órdenes ajenas, aunque conozca el id.
+ */
 const db = require('../config/db');
 const { generarCFDI }     = require('../services/cfdi.service');
 const { enviarReciboCFDI } = require('../services/email.service');
@@ -54,6 +65,11 @@ const getDetallePedido = async (req, res) => {
     }
 };
 
+/**
+ * POST /api/ordenes/enviar-recibo — Genera y envía el CFDI de una orden pagada.
+ * Recibe el paypalOrderId, reconstruye el desglose fiscal (IEPS variable por
+ * graduación + IVA en cascada) y manda el XML adjunto al correo del usuario.
+ */
 const enviarRecibo = async (req, res) => {
     try {
         const { paypalOrderId } = req.body;
